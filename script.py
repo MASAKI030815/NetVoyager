@@ -27,17 +27,24 @@ http_check_targets = [
     ["http://ipv4.google.com", "Google-IPv4"],
     ["http://ipv6.google.com", "Google-IPv6"]
 ]
+virus_check_targets = [
+    ["http://example.com/malicious_file", "Malicious File 1"],
+    ["http://example.org/bad_file", "Malicious File 2"]
+]
 #-----------------------
 
 response_myipaddr = ""
 response_ping_gateway_v4 = ""
 response_ping_internet_v4 = []
+response_ping_internet_v4_lock = threading.Lock()
 response_ping_internet_v6 = []
+response_ping_internet_v6_lock = threading.Lock()
 response_http_checks = []
 response_http_checks_lock = threading.Lock()
+response_virus_checks = []
+response_virus_checks_lock = threading.Lock()
 
-response_ping_internet_v4_lock = threading.Lock()
-response_ping_internet_v6_lock = threading.Lock()
+
 
 def myipaddr():
     global interface
@@ -154,16 +161,29 @@ def theading_ping_internet_v6():
 def check_http_response(url, name):
     try:
         response = requests.get(url, timeout=10)
-        if response.status_code == 200:
-            status = f"\033[92mOK ({response.status_code})\033[0m : {url} ({name})"
-        else:
-            status = f"\033[91mNG ({response.status_code})\033[0m : {url} ({name})"
+        status = f"\033[92mOK ({response.status_code})\033[0m : {url} ({name})" if response.status_code == 200 else f"\033[91mNG ({response.status_code})\033[0m : {url} ({name})"
     except requests.exceptions.RequestException as e:
         status = f"\033[91mNG (Error)\033[0m : {url} ({name}) - {e}"
     with response_http_checks_lock:
         response_http_checks.append(status)
 
-def threading_http_response():
+# ウイルスチェックを行う関数
+def check_virus_download(url, name):
+    try:
+        local_filename = url.split('/')[-1]
+        with requests.get(url, stream=True) as r:
+            r.raise_for_status()
+            with open(local_filename, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=8192):
+                    f.write(chunk)
+            status = f"\033[92mOK\033[0m : {url} ({name}) - Downloaded as {local_filename}"
+    except requests.exceptions.RequestException as e:
+        status = f"\033[91mNG\033[0m : {url} ({name}) - {str(e)}"
+    with response_virus_checks_lock:
+        response_virus_checks.append(status)
+
+# HTTPチェックを行うスレッド関数
+def threading_http_checks():
     threads = []
     for target in http_check_targets:
         thread = threading.Thread(target=check_http_response, args=(target[0], target[1]))
@@ -172,25 +192,11 @@ def threading_http_response():
     for thread in threads:
         thread.join()
 
-def check_virus_response(url, name):
-    try:
-        local_filename = url.split('/')[-1]
-        with requests.get(url, stream=True) as r:
-            r.raise_for_status()
-            with open(local_filename, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=8192):
-                    if chunk:  # ファイルの内容があるかチェック
-                        f.write(chunk)
-            status = f"\033[92mOK\033[0m : {url} ({name}) - Downloaded as {local_filename}"
-    except requests.exceptions.RequestException as e:
-        status = f"\033[91mNG\033[0m : {url} ({name}) - {str(e)}"
-    with response_http_checks_lock:
-        response_http_checks.append(status)
-
-def threading_virus_response():
+# ウイルスチェックを行うスレッド関数
+def threading_virus_checks():
     threads = []
-    for target in http_check_targets:
-        thread = threading.Thread(target=check_virus_response, args=(target[0], target[1]))
+    for target in virus_check_targets:
+        thread = threading.Thread(target=check_virus_download, args=(target[0], target[1]))
         threads.append(thread)
         thread.start()
     for thread in threads:
@@ -207,13 +213,16 @@ def update_cli():
     response_ping_internet_v4.clear()
     response_ping_internet_v6.clear()
     response_http_checks.clear()
+    response_virus_checks.clear()
     theading_ping_internet_v4()
     theading_ping_internet_v6()
-    threading_virus_response()
+    threading_http_checks()
+    threading_virus_checks()
 
     response_ping_internet_v4.sort()
     response_ping_internet_v6.sort()
     response_http_checks.sort()
+    response_virus_checks.sort()
 
     sys.stdout.write("\033[H\033[J")
 
@@ -223,15 +232,16 @@ def update_cli():
     print(f"Netmask: {response_myipaddr[1]}")
     print(f"Gateway: {response_myipaddr[2]}")
     print("\n-------IPv4 Ping Results-------")
-    print(f"{response_ping_gateway_v4} (Gateway)")
-    print("\n-------IPv4 Ping Results-------")
     for status in response_ping_internet_v4:
         print(status)
     print("\n-------IPv6 Ping Results-------")
     for status in response_ping_internet_v6:
         print(status)
-    print("\n-------Virus Check Results-------")
+    print("\n-------HTTP Results-------")
     for status in response_http_checks:
+        print(status)
+    print("\n-------Virus Check Results-------")
+    for status in response_virus_checks:
         print(status)
 
 if __name__ == '__main__':       
