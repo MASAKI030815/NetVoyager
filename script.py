@@ -38,8 +38,6 @@ mtr_v4_targets = [
 ]
 mtr_v6_targets = [
     ["2001:4860:4860::8844", "Google DNS IPv6 Secondary"],
-    ["2620:0:ccc::2", "OpenDNS IPv6"],
-    ["2001:500:2f::f", "ISC IPv6"]
 ]
 
 #-----------------------
@@ -299,4 +297,3 @@ if __name__ == '__main__':
     while True:
         update_cli()
         time.sleep(1) 
-        
