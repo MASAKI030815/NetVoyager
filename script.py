@@ -39,10 +39,10 @@ mtr_v4_targets = [
 mtr_v6_targets = [
     ["2001:4860:4860::8844", "Google DNS IPv6 Secondary"],
 ]
-mtr_v4_hosts = [
+mtr_v4_mark_hosts = [
     ["139.130.4.5", "Australia DNS"],
 ]
-mtr_v6_hosts = [
+mtr_v6_mark_hosts = [
     ["2001:4860:4860::8844", "Google DNS IPv6 Secondary"],
 ]
 #-----------------------
@@ -236,7 +236,7 @@ def check_mtr(target, name, version='ipv4'):
         
         # 結果のテキストからIPアドレスを探し、対応する緑色の文字列に置換
         highlighted_result = result.stdout
-        for ip_address, replacement in (mtr_v4_hosts + mtr_v6_hosts):
+        for ip_address, replacement in (mtr_v4_mark_hosts + mtr_v6_mark_hosts):
             highlighted_replacement = f"\033[92m{replacement}\033[0m"  # 緑色にする
             highlighted_result = re.sub(r'\b{}\b'.format(re.escape(ip_address)), highlighted_replacement, highlighted_result)
 
