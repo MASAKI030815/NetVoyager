@@ -66,7 +66,7 @@ def ping_gateway_v4():
     # 結果の結合
     combined_status = f"{short_status} - {large_status}"
 
-    return f"{combined_status} : {default_gateway} (Gateway)"
+    return f"{combined_status} : {default_gateway}"
 
 
 def ping_internet_v4(host, name):
