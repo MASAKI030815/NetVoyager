@@ -31,6 +31,17 @@ virus_check_targets = [
     ["http://example.com/malicious_file", "Malicious File 1"],
     ["http://example.org/bad_file", "Malicious File 2"]
 ]
+mtr_v4_targets = [
+    ["139.130.4.5", "Australia DNS"],
+    ["208.67.222.222", "OpenDNS"],
+    ["4.2.2.2", "Level 3 DNS"]
+]
+mtr_v6_targets = [
+    ["2001:4860:4860::8844", "Google DNS IPv6 Secondary"],
+    ["2620:0:ccc::2", "OpenDNS IPv6"],
+    ["2001:500:2f::f", "ISC IPv6"]
+]
+
 #-----------------------
 
 response_myipaddr = ""
@@ -43,6 +54,8 @@ response_http_checks = []
 response_http_checks_lock = threading.Lock()
 response_virus_checks = []
 response_virus_checks_lock = threading.Lock()
+response_mtr_checks = []
+response_mtr_checks_lock = threading.Lock()
 
 
 
@@ -202,11 +215,42 @@ def threading_virus_checks():
     for thread in threads:
         thread.join()
 
+def check_mtr(target, name, version='ipv4'):
+    mtr_cmd = ['mtr', '--report', '--report-cycles', '1']
+    if version == 'ipv6':
+        mtr_cmd.append('-6')
+    mtr_cmd.append(target)
+
+    try:
+        result = subprocess.run(mtr_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        output = f"{name} ({target}) - IPv{version[-1]}:\n{result.stdout}"
+    except Exception as e:
+        output = f"{name} ({target}) - IPv{version[-1]}: Error - {str(e)}"
+
+    with response_mtr_checks_lock:
+        response_mtr_checks.append(output)
+
+def threading_mtr_checks():
+    threads = []
+    for target in mtr_v4_targets:
+        thread = threading.Thread(target=check_mtr, args=(target[0], target[1]))
+        threads.append(thread)
+        thread.start()
+    for target in mtr_v6_targets:
+        thread = threading.Thread(target=check_mtr, args=(target[0], target[1], 'ipv6'))
+        threads.append(thread)
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+
+
 def update_cli():
     global response_myipaddr
     global response_ping_gateway_v4
     global response_ping_internet_v4
     global response_ping_internet_v6
+    global response_mtr_checks
 
     response_myipaddr = myipaddr()
     response_ping_gateway_v4 = ping_gateway_v4()
@@ -214,15 +258,19 @@ def update_cli():
     response_ping_internet_v6.clear()
     response_http_checks.clear()
     response_virus_checks.clear()
+    response_mtr_checks.clear()
+
     theading_ping_internet_v4()
     theading_ping_internet_v6()
     threading_http_checks()
     threading_virus_checks()
+    threading_mtr_checks()
 
     response_ping_internet_v4.sort()
     response_ping_internet_v6.sort()
     response_http_checks.sort()
     response_virus_checks.sort()
+    response_mtr_checks.sort()
 
     sys.stdout.write("\033[H\033[J")
 
@@ -243,8 +291,12 @@ def update_cli():
     print("\n-------Virus Check Results-------")
     for status in response_virus_checks:
         print(status)
+    print("\n-------MTR Results-------")
+    for result in response_mtr_checks:
+        print(result)
 
 if __name__ == '__main__':       
     while True:
         update_cli()
         time.sleep(1) 
+        
