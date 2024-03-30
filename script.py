@@ -33,8 +33,6 @@ virus_check_targets = [
 ]
 mtr_v4_targets = [
     ["139.130.4.5", "Australia DNS"],
-    ["208.67.222.222", "OpenDNS"],
-    ["4.2.2.2", "Level 3 DNS"]
 ]
 mtr_v6_targets = [
     ["2001:4860:4860::8844", "Google DNS IPv6 Secondary"],
