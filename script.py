@@ -303,8 +303,8 @@ def update_cli():
     for status in response_virus_checks:
         print(status)
     print("\n-------MTR Results-------")
-    for result in response_mtr_checks:
-        print(result)
+    #for result in response_mtr_checks:
+    #    print(result)
     display_mtr_results()
 
 if __name__ == '__main__':       
