@@ -143,7 +143,7 @@ def ping_internet_v4(host, name):
 
 def ping_internet_v6(host, name):
     # ラージパケットでの疎通確認
-    large_packet_cmd = ["ping6", "-c", "1", "-s", "1452", "-W", "1", host]
+    large_packet_cmd = ["ping6", "-c", "1", "-s", "1452", "-W", "2", host]
     large_packet_result = subprocess.run(large_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     large_status = "OK" if large_packet_result.returncode == 0 else "NG"
     large_color = "\033[92m" if large_packet_result.returncode == 0 else "\033[91m"
@@ -247,14 +247,17 @@ def check_mtr(target, name, version='ipv4'):
 
 def threading_mtr_checks():
     threads = []
+    # IPv4のターゲットに対するMTRチェックのスレッドを作成
     for target in mtr_v4_targets:
-        thread = threading.Thread(target=check_mtr, args=(target[0], target[1]))
+        thread = threading.Thread(target=check_mtr, args=(target[0], target[1], 'ipv4'))
         threads.append(thread)
         thread.start()
+    # IPv6のターゲットに対するMTRチェックのスレッドを作成
     for target in mtr_v6_targets:
         thread = threading.Thread(target=check_mtr, args=(target[0], target[1], 'ipv6'))
         threads.append(thread)
         thread.start()
+    # すべてのスレッドが終了するまで待機
     for thread in threads:
         thread.join()
 
@@ -330,4 +333,4 @@ def update_cli():
 if __name__ == '__main__':       
     while True:
         update_cli()
-        time.sleep(5) 
+        time.sleep(3) 
