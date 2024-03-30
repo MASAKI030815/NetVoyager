@@ -239,7 +239,22 @@ def threading_mtr_checks():
     for thread in threads:
         thread.join()
 
+def display_mtr_results():
+    # IPv4とIPv6の結果を分割
+    ipv4_results = [result for result in response_mtr_checks if "IPv4" in result]
+    ipv6_results = [result for result in response_mtr_checks if "IPv6" in result]
 
+    # 最大の結果数を決定
+    max_length = max(len(ipv4_results), len(ipv6_results))
+
+    # 結果が足りない場合は空の結果を追加
+    ipv4_results += [''] * (max_length - len(ipv4_results))
+    ipv6_results += [''] * (max_length - len(ipv6_results))
+
+    print("\n-------MTR Results-------")
+    for i in range(max_length):
+        # 結果を横に並べて表示
+        print(f"{ipv4_results[i]:<70} {ipv6_results[i]}")
 
 def update_cli():
     global response_myipaddr
@@ -290,6 +305,7 @@ def update_cli():
     print("\n-------MTR Results-------")
     for result in response_mtr_checks:
         print(result)
+    display_mtr_results()
 
 if __name__ == '__main__':       
     while True:
