@@ -93,27 +93,24 @@ def ping_gateway_v4():
     # ショートパケットでの疎通確認
     short_packet_cmd = ["ping"] + pingv4_short_option + [default_gateway]
     short_packet_result = subprocess.run(short_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    short_color = "\033[92m" if short_packet_result.returncode == 0 else "\033[91m"
     short_status = "OK" if short_packet_result.returncode == 0 else "NG"
+    short_color = "\033[92m" if short_status == "OK" else "\033[91m"
 
     # ラージパケットでの疎通確認
     large_packet_cmd = ["ping"] + pingv4_large_option + [default_gateway]
     large_packet_result = subprocess.run(large_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    large_color = "\033[92m" if large_packet_result.returncode == 0 else "\033[91m"
     large_status = "OK" if large_packet_result.returncode == 0 else "NG"
+    large_color = "\033[92m" if large_status == "OK" else "\033[91m"
     
-    # 結果が両方OKまたはNGの場合の処理
-    if short_status == "OK" and large_status == "OK":
-        status_symbol = "\033[92mOK\033[0m"
-    elif short_status == "NG" and large_status == "NG":
-        status_symbol = "\033[91mNG\033[0m"
-    else:
-        status_symbol = "-"
+    # 全体のステータスの決定
+    status = "OK" if short_status == "OK" and large_status == "OK" else "NG"
+    status_color = "\033[92m" if status == "OK" else "\033[91m"
 
     # 結果の結合
-    combined_status = f"{status_symbol} ({short_color}Short\033[0m / {large_color}Large\033[0m) : {default_gateway}"
+    combined_status = f"{status_color}{status}\033[0m ({short_color}Short\033[0m / {large_color}Large\033[0m) : {default_gateway}"
 
     return combined_status
+
 
 def ping_internet_v4(host, name):
     # ショートパケットでの疎通確認
