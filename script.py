@@ -13,6 +13,7 @@ pingv4_targets = [
     ["1.1.1.1", "Cloudflare DNS"],
     ["1.0.0.1", "Cloudflare DNS Backup"]
 ]
+
 pingv4_option = "-c 1 -M do -s 1472 -W 1"
 pingv6_targets = [
     ["2001:4860:4860::8888", "Google DNS IPv6"],
@@ -35,7 +36,6 @@ response_ping_internet_v6 = []
 response_http_checks = []
 response_http_checks_lock = threading.Lock()
 
-# ロックオブジェクトの作成
 response_ping_internet_v4_lock = threading.Lock()
 response_ping_internet_v6_lock = threading.Lock()
 
@@ -142,6 +142,10 @@ def update_cli():
     theading_ping_internet_v6()
     threading_http_checks()
 
+    response_ping_internet_v4.sort()
+    response_ping_internet_v6.sort()
+    response_http_checks.sort()
+
     sys.stdout.write("\033[H\033[J")
 
     print("-------Setting-------")
@@ -164,5 +168,5 @@ def update_cli():
 if __name__ == '__main__':       
     while True:
         update_cli()
-        time.sleep(3) 
+        time.sleep(1) 
 
