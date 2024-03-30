@@ -295,7 +295,7 @@ def update_cli():
 
     ipv4_addr, netmask, gateway, ipv6_addr = myipaddr()
 
-    print("-------Network Setting-------")
+    print("\033[93m-------Network Setting-------\033[0m")
     print(f"Interface: {interface}")
     if ipv4_addr and netmask:
         print(f"IPv4 Address: {ipv4_addr}")
@@ -304,20 +304,24 @@ def update_cli():
         print(f"Default Gateway: {gateway}")
     if ipv6_addr:
         print(f"IPv6 Address: {ipv6_addr}")
-    print("\n-------IPv4 Ping Results-------")
-    print(ping_gateway_v4())
+
+    print("\033[93m\n-------IPv4 Ping Results-------\033[0m")
     for status in response_ping_internet_v4:
         print(status)
-    print("\n-------IPv6 Ping Results-------")
+
+    print("\033[93m\n-------IPv6 Ping Results-------\033[0m")
     for status in response_ping_internet_v6:
         print(status)
-    print("\n-------HTTP Results-------")
+
+    print("\033[93m\n-------HTTP Results-------\033[0m")
     for status in response_http_checks:
         print(status)
-    print("\n-------Virus Check Results-------")
+
+    print("\033[93m\n-------Virus Check Results-------\033[0m")
     for status in response_virus_checks:
         print(status)
-    print("\n-------MTR Results-------")
+
+    print("\033[93m\n-------MTR Results-------\033[0m")
     for result in response_mtr_checks:
         print(result)
     
