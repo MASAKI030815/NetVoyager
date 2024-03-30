@@ -234,10 +234,11 @@ def check_mtr(target, name, version='ipv4'):
     try:
         result = subprocess.run(mtr_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         
-        # 結果のテキストからIPアドレスを探し、対応する文字列に置換
+        # 結果のテキストからIPアドレスを探し、対応する緑色の文字列に置換
         highlighted_result = result.stdout
         for ip_address, replacement in (mtr_v4_hosts + mtr_v6_hosts):
-            highlighted_result = re.sub(r'\b{}\b'.format(re.escape(ip_address)), replacement, highlighted_result)
+            highlighted_replacement = f"\033[92m{replacement}\033[0m"  # 緑色にする
+            highlighted_result = re.sub(r'\b{}\b'.format(re.escape(ip_address)), highlighted_replacement, highlighted_result)
 
         output = f"{name} ({target}) - IPv{version[-1]}:\n{highlighted_result}"
     except Exception as e:
