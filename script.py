@@ -143,7 +143,7 @@ def ping_internet_v4(host, name):
 
 def ping_internet_v6(host, name):
     # ラージパケットでの疎通確認
-    large_packet_cmd = ["ping6", "-c", "1", "-s", "1452", "-W", "2", host]
+    large_packet_cmd = ["ping6", "-c", "1", "-s", "1452", "-W", "3", host]
     large_packet_result = subprocess.run(large_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     large_status = "OK" if large_packet_result.returncode == 0 else "NG"
     large_color = "\033[92m" if large_packet_result.returncode == 0 else "\033[91m"
@@ -333,4 +333,4 @@ def update_cli():
 if __name__ == '__main__':       
     while True:
         update_cli()
-        time.sleep(3) 
+        time.sleep(5) 
