@@ -13,7 +13,6 @@ pingv4_targets = [
     ["1.1.1.1", "Cloudflare DNS"],
     ["1.0.0.1", "Cloudflare DNS Backup"]
 ]
-
 pingv4_option = "-c 1 -M do -s 1472 -W 1"
 pingv6_targets = [
     ["2001:4860:4860::8888", "Google DNS IPv6"],
@@ -40,32 +39,28 @@ response_ping_internet_v4_lock = threading.Lock()
 response_ping_internet_v6_lock = threading.Lock()
 
 def myipaddr():
-    while True:
-        global default_gateway
+    global interface
+    addrs = netifaces.ifaddresses(interface)
+    if netifaces.AF_INET in addrs:
+        ipv4_info = addrs[netifaces.AF_INET][0]
         gateways = netifaces.gateways()
-        default_gateway = gateways['default'][netifaces.AF_INET]
-        interface = default_gateway[1]
-        addrs = netifaces.ifaddresses(interface)
-
-        if netifaces.AF_INET in addrs:
-            ipv4_info = addrs[netifaces.AF_INET][0]
-            return ipv4_info.get('addr'),ipv4_info.get('netmask'),default_gateway[0]
-        return None
+        default_gateway = gateways['default'][netifaces.AF_INET][0]
+        return ipv4_info.get('addr'), ipv4_info.get('netmask'), default_gateway
+    return None
 
 def ping_gateway_v4():
-    global response_ping_gateway_v4
-    global default_gateway
-    while True:
-        cmd = ["ping", "-c", "1", "-M", "do", "-s", "1472", "-W", "1", default_gateway[0]]
-        result = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        if result.returncode == 0:
-            response_ping_gateway_v4 = f"\033[92mOK\033[0m : {default_gateway[0]}"
-        else:
-            response_ping_gateway_v4 = f"\033[91mNG\033[0m : {default_gateway[0]}"
-        return response_ping_gateway_v4
+    global interface
+    gateways = netifaces.gateways()
+    default_gateway = gateways['default'][netifaces.AF_INET][0]
+    cmd = ["ping", "-c", "1", "-M", "do", "-s", "1472", "-W", "1", default_gateway]
+    result = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    if result.returncode == 0:
+        response_ping_gateway_v4 = f"\033[92mOK\033[0m : {default_gateway}"
+    else:
+        response_ping_gateway_v4 = f"\033[91mNG\033[0m : {default_gateway}"
+    return response_ping_gateway_v4
 
 def ping_internet_v4(host, name):
-    global response_ping_internet_v4
     cmd = ["ping", "-c", "1", "-M", "do", "-s", "1472", "-W", "1", host]
     result = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     if result.returncode == 0:
@@ -75,9 +70,7 @@ def ping_internet_v4(host, name):
     with response_ping_internet_v4_lock:
         response_ping_internet_v4.append(status)
 
-
 def ping_internet_v6(host, name):
-    global response_ping_internet_v6
     cmd = ["ping6", "-c", "1", "-s", "1452", "-W", "1", host]
     result = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     if result.returncode == 0:
@@ -106,7 +99,6 @@ def theading_ping_internet_v6():
         thread.join()
 
 def check_http_response(url, name):
-    global response_http_checks
     try:
         response = requests.get(url, timeout=10)
         if response.status_code == 200:
