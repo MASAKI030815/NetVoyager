@@ -39,7 +39,12 @@ mtr_v4_targets = [
 mtr_v6_targets = [
     ["2001:4860:4860::8844", "Google DNS IPv6 Secondary"],
 ]
-
+mtr_v4_host = [
+    ["139.130.4.5", "Australia DNS"],
+]
+mtr_v6_host = [
+    ["2001:4860:4860::8844", "Google DNS IPv6 Secondary"],
+]
 #-----------------------
 
 response_myipaddr = ""
@@ -220,8 +225,6 @@ def threading_virus_checks():
     for thread in threads:
         thread.join()
 
-import re
-
 def check_mtr(target, name, version='ipv4'):
     mtr_cmd = ['mtr', '--report', '--report-cycles', '1', '--no-dns']
     if version == 'ipv6':
@@ -233,7 +236,8 @@ def check_mtr(target, name, version='ipv4'):
         
         # 結果のテキストからIPアドレスを探し、緑色に置換
         highlighted_result = result.stdout
-        for ip_address, _ in (mtr_v4_targets + mtr_v6_targets):
+        # mtr_v4_hostsとmtr_v6_hostsのIPアドレスでテキストを置換
+        for ip_address, _ in (mtr_v4_hosts + mtr_v6_hosts):
             highlighted_result = re.sub(r'(\b{}\b)'.format(re.escape(ip_address)), r'\033[92m\1\033[0m', highlighted_result)
 
         output = f"{name} ({target}) - IPv{version[-1]}:\n{highlighted_result}"
@@ -242,6 +246,7 @@ def check_mtr(target, name, version='ipv4'):
 
     with response_mtr_checks_lock:
         response_mtr_checks.append(output)
+
 
 
 def threading_mtr_checks():
