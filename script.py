@@ -4,6 +4,8 @@ import sys
 import netifaces
 import requests
 import subprocess
+import os
+
 
 #-----------------------
 interface = "eth0"
@@ -161,10 +163,34 @@ def check_http_response(url, name):
     with response_http_checks_lock:
         response_http_checks.append(status)
 
-def threading_http_checks():
+def threading_http_response():
     threads = []
     for target in http_check_targets:
         thread = threading.Thread(target=check_http_response, args=(target[0], target[1]))
+        threads.append(thread)
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+def check_virus_response(url, name):
+    try:
+        local_filename = url.split('/')[-1]
+        with requests.get(url, stream=True) as r:
+            r.raise_for_status()
+            with open(local_filename, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=8192):
+                    if chunk:  # ファイルの内容があるかチェック
+                        f.write(chunk)
+            status = f"\033[92mOK\033[0m : {url} ({name}) - Downloaded as {local_filename}"
+    except requests.exceptions.RequestException as e:
+        status = f"\033[91mNG\033[0m : {url} ({name}) - {str(e)}"
+    with response_http_checks_lock:
+        response_http_checks.append(status)
+
+def threading_virus_response():
+    threads = []
+    for target in http_check_targets:
+        thread = threading.Thread(target=check_virus_response, args=(target[0], target[1]))
         threads.append(thread)
         thread.start()
     for thread in threads:
@@ -183,7 +209,7 @@ def update_cli():
     response_http_checks.clear()
     theading_ping_internet_v4()
     theading_ping_internet_v6()
-    threading_http_checks()
+    threading_virus_response()
 
     response_ping_internet_v4.sort()
     response_ping_internet_v6.sort()
@@ -204,7 +230,7 @@ def update_cli():
     print("\n-------IPv6 Ping Results-------")
     for status in response_ping_internet_v6:
         print(status)
-    print("\n-------HTTP Check Results-------")
+    print("\n-------Virus Check Results-------")
     for status in response_http_checks:
         print(status)
 
@@ -212,4 +238,3 @@ if __name__ == '__main__':
     while True:
         update_cli()
         time.sleep(1) 
-
