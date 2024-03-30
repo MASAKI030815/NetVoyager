@@ -106,14 +106,31 @@ def ping_internet_v4(host, name):
         response_ping_internet_v4.append(combined_status)
 
 def ping_internet_v6(host, name):
-    cmd = ["ping6", "-c", "1", "-s", "1452", "-W", "1", host]
-    result = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    if result.returncode == 0:
-        status = f"\033[92mOK\033[0m : {host} ({name})"
+    # ラージパケットでの疎通確認
+    large_packet_cmd = ["ping6", "-c", "1", "-s", "1452", "-W", "1", host]
+    large_packet_result = subprocess.run(large_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    large_status = "OK" if large_packet_result.returncode == 0 else "NG"
+    large_color = "\033[92m" if large_packet_result.returncode == 0 else "\033[91m"
+
+    # ショートパケットでの疎通確認
+    short_packet_cmd = ["ping6", "-c", "1", "-s", "128", "-W", "1", host]
+    short_packet_result = subprocess.run(short_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    short_status = "OK" if short_packet_result.returncode == 0 else "NG"
+    short_color = "\033[92m" if short_packet_result.returncode == 0 else "\033[91m"
+
+    # 結果が両方OKまたはNGの場合の処理
+    if short_status == "OK" and large_status == "OK":
+        status_symbol = "\033[92mOK\033[0m"
+    elif short_status == "NG" and large_status == "NG":
+        status_symbol = "\033[91mNG\033[0m"
     else:
-        status = f"\033[91mNG\033[0m : {host} ({name})"
+        status_symbol = "-"
+
+    # 結果の結合
+    combined_status = f"{status_symbol} ({short_color}Short\033[0m / {large_color}Large\033[0m) : {host} ({name})"
+    
     with response_ping_internet_v6_lock:
-        response_ping_internet_v6.append(status)
+        response_ping_internet_v6.append(combined_status)
 
 def theading_ping_internet_v4():
     threads = []
