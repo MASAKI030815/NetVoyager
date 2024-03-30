@@ -234,26 +234,21 @@ def check_mtr(target, name, version='ipv4'):
     try:
         result = subprocess.run(mtr_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         
-        # 結果を行ごとに分割してホスト名またはIPアドレスに対応する行を探す
+        # 結果を行ごとに分割してホスト名に対応する行を探す
         output_lines = result.stdout.split('\n')
         for line in output_lines:
-            line_modified = False
             for ip_address, replacement in (mtr_v4_mark_hosts + mtr_v6_mark_hosts):
-                if ip_address in line:
-                    # IPアドレスを対応するホスト名に置換し、緑色に変更
-                    colored_replacement = f"\033[92m{replacement}\033[0m"
-                    line = line.replace(ip_address, colored_replacement)
-                    line_modified = True
-            if line_modified:
-                # 変更された行を出力
-                print(f"{name} ({target}) - IPv{version[-1]}: {line.strip()}")
-                break
+                if ip_address in line or replacement in line:
+                    # 対応するホスト名の行を出力
+                    print(f"{name} ({target}) - IPv{version[-1]}: {line.strip()}")
+                    break
 
     except Exception as e:
         print(f"{name} ({target}) - IPv{version[-1]}: Error - {str(e)}")
 
     with response_mtr_checks_lock:
         response_mtr_checks.append(f"{name} ({target}) - IPv{version[-1]}: See console for details")
+
 
 
 def threading_mtr_checks():
