@@ -57,13 +57,32 @@ response_mtr_checks_lock = threading.Lock()
 
 def myipaddr():
     global interface
-    addrs = netifaces.ifaddresses(interface)
-    if netifaces.AF_INET in addrs:
-        ipv4_info = addrs[netifaces.AF_INET][0]
+    ipv6_addr = None
+    ipv4_addr = None
+    netmask = None
+    gateway = None
+
+    try:
+        addrs = netifaces.ifaddresses(interface)
+        # IPv4アドレスとネットマスクの取得
+        if netifaces.AF_INET in addrs:
+            ipv4_info = addrs[netifaces.AF_INET][0]
+            ipv4_addr = ipv4_info.get('addr')
+            netmask = ipv4_info.get('netmask')
+        # デフォルトゲートウェイの取得
         gateways = netifaces.gateways()
-        default_gateway = gateways['default'][netifaces.AF_INET][0]
-        return ipv4_info.get('addr'), ipv4_info.get('netmask'), default_gateway
-    return None
+        if netifaces.AF_INET in gateways['default']:
+            gateway = gateways['default'][netifaces.AF_INET][0]
+        # IPv6アドレスの取得（リンクローカルアドレスを除外）
+        if netifaces.AF_INET6 in addrs:
+            for addr_info in addrs[netifaces.AF_INET6]:
+                if addr_info['addr'].startswith('fe80') is False:
+                    ipv6_addr = addr_info['addr'].split('%')[0]  # ゾーンインデックスを除去
+                    break
+    except Exception as e:
+        print(f"IPアドレス取得中にエラーが発生しました: {e}")
+
+    return ipv4_addr, netmask, gateway, ipv6_addr
 
 def ping_gateway_v4():
     global interface
@@ -239,23 +258,6 @@ def threading_mtr_checks():
     for thread in threads:
         thread.join()
 
-def display_mtr_results():
-    # IPv4とIPv6の結果を分割
-    ipv4_results = [result for result in response_mtr_checks if "IPv4" in result]
-    ipv6_results = [result for result in response_mtr_checks if "IPv6" in result]
-
-    # 最大の結果数を決定
-    max_length = max(len(ipv4_results), len(ipv6_results))
-
-    # 結果が足りない場合は空の結果を追加
-    ipv4_results += [''] * (max_length - len(ipv4_results))
-    ipv6_results += [''] * (max_length - len(ipv6_results))
-
-    print("\n-------MTR Results-------")
-    for i in range(max_length):
-        # 結果を横に並べて表示
-        print(f"{ipv4_results[i]:<70} {ipv6_results[i]}")
-
 def update_cli():
     global response_myipaddr
     global response_ping_gateway_v4
@@ -285,11 +287,17 @@ def update_cli():
 
     sys.stdout.write("\033[H\033[J")
 
-    print("-------Setting-------")
+    ipv4_addr, netmask, gateway, ipv6_addr = myipaddr()
+
+    print("-------Network Setting-------")
     print(f"Interface: {interface}")
-    print(f"IP Address: {response_myipaddr[0]}")
-    print(f"Netmask: {response_myipaddr[1]}")
-    print(f"Gateway: {response_myipaddr[2]}")
+    if ipv4_addr and netmask:
+        print(f"IPv4 Address: {ipv4_addr}")
+        print(f"Netmask: {netmask}")
+    if gateway:
+        print(f"Default Gateway: {gateway}")
+    if ipv6_addr:
+        print(f"IPv6 Address: {ipv6_addr}")
     print("\n-------IPv4 Ping Results-------")
     for status in response_ping_internet_v4:
         print(status)
@@ -303,10 +311,9 @@ def update_cli():
     for status in response_virus_checks:
         print(status)
     print("\n-------MTR Results-------")
-    #for result in response_mtr_checks:
-    #    print(result)
-    display_mtr_results()
-
+    for result in response_mtr_checks:
+        print(result)
+    
 if __name__ == '__main__':       
     while True:
         update_cli()
