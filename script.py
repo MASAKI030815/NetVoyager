@@ -143,7 +143,7 @@ def ping_internet_v4(host, name):
 
 def ping_internet_v6(host, name):
     # ラージパケットでの疎通確認
-    large_packet_cmd = ["ping6", "-c", "1", "-s", "1000", "-W", "1", host]
+    large_packet_cmd = ["ping6", "-c", "1", "-s", "1452", "-W", "1", host]
     large_packet_result = subprocess.run(large_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     large_status = "OK" if large_packet_result.returncode == 0 else "NG"
     large_color = "\033[92m" if large_packet_result.returncode == 0 else "\033[91m"
@@ -258,6 +258,16 @@ def threading_mtr_checks():
     for thread in threads:
         thread.join()
 
+def threading_ping_v4():
+    thread = threading.Thread(target=theading_ping_internet_v4)
+    thread.start()
+    return thread
+
+def threading_ping_v6():
+    thread = threading.Thread(target=theading_ping_internet_v6)
+    thread.start()
+    return thread
+
 def update_cli():
     global response_myipaddr
     global response_ping_gateway_v4
@@ -273,11 +283,14 @@ def update_cli():
     response_virus_checks.clear()
     response_mtr_checks.clear()
 
-    theading_ping_internet_v4()
-    theading_ping_internet_v6()
+    v4_thread = threading_ping_v4()
+    v6_thread = threading_ping_v6()
     threading_http_checks()
     threading_virus_checks()
     threading_mtr_checks()
+
+    v4_thread.join()
+    v6_thread.join()
 
     response_ping_internet_v4.sort()
     response_ping_internet_v6.sort()
