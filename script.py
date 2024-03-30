@@ -111,7 +111,6 @@ def ping_gateway_v4():
 
     return combined_status
 
-
 def ping_internet_v4(host, name):
     # ショートパケットでの疎通確認
     short_packet_cmd = ["ping"] + pingv4_short_option + [host]
@@ -300,6 +299,7 @@ def update_cli():
     if ipv6_addr:
         print(f"IPv6 Address: {ipv6_addr}")
     print("\n-------IPv4 Ping Results-------")
+    print(ping_gateway_v4())
     for status in response_ping_internet_v4:
         print(status)
     print("\n-------IPv6 Ping Results-------")
