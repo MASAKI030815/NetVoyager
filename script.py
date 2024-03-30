@@ -56,17 +56,18 @@ def ping_gateway_v4():
     # ラージパケットでの疎通確認
     large_packet_cmd = ["ping", "-c", "1", "-M", "do", "-s", "1472", "-W", "1", default_gateway]
     large_packet_result = subprocess.run(large_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    large_status = "\033[92mOK\033[0m" if large_packet_result.returncode == 0 else "\033[91mNG\033[0m"
+    large_status = "\033[92mOK (Large)\033[0m" if large_packet_result.returncode == 0 else "\033[91mNG (Large)\033[0m"
     
     # ショートパケットでの疎通確認
     short_packet_cmd = ["ping", "-c", "1", "-s", "64", "-W", "1", default_gateway]
     short_packet_result = subprocess.run(short_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    short_status = "\033[92mOK\033[0m" if short_packet_result.returncode == 0 else "\033[91mNG\033[0m"
+    short_status = "\033[92mOK (Short)\033[0m" if short_packet_result.returncode == 0 else "\033[91mNG (Short)\033[0m"
 
     # 結果の結合
-    combined_status = f"{short_status} (Short) - {large_status} (Large)"
+    combined_status = f"{short_status} - {large_status}"
 
     return f"{combined_status} : {default_gateway} (Gateway)"
+
 
 def ping_internet_v4(host, name):
     cmd = ["ping", "-c", "1", "-M", "do", "-s", "1472", "-W", "1", host]
