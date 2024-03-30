@@ -22,9 +22,8 @@ pingv6_targets = [
 ]
 pingv6_option = "-c 1 -s 1452 -W 1"
 http_check_targets = [
-    ["http://www.google.com", "Google"],
-    ["http://www.cloudflare.com", "Cloudflare"],
-    ["http://www.example.com", "Example"]
+    ["http://ipv4.google.com", "Google-IPv4"],
+    ["http://ipv6.google.com", "Google-IPv6"]
 ]
 #-----------------------
 
