@@ -4,7 +4,7 @@ import sys
 import netifaces
 import requests
 import subprocess
-import os
+import re
 
 
 #-----------------------
@@ -220,20 +220,29 @@ def threading_virus_checks():
     for thread in threads:
         thread.join()
 
+import re
+
 def check_mtr(target, name, version='ipv4'):
-    mtr_cmd = ['mtr', '--report', '--report-cycles', '1','--no-dns']
+    mtr_cmd = ['mtr', '--report', '--report-cycles', '1', '--no-dns']
     if version == 'ipv6':
         mtr_cmd.append('-6')
     mtr_cmd.append(target)
 
     try:
         result = subprocess.run(mtr_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        output = f"{name} ({target}) - IPv{version[-1]}:\n{result.stdout}"
+        
+        # 結果のテキストからIPアドレスを探し、緑色に置換
+        highlighted_result = result.stdout
+        for ip_address, _ in (mtr_v4_targets + mtr_v6_targets):
+            highlighted_result = re.sub(r'(\b{}\b)'.format(re.escape(ip_address)), r'\033[92m\1\033[0m', highlighted_result)
+
+        output = f"{name} ({target}) - IPv{version[-1]}:\n{highlighted_result}"
     except Exception as e:
         output = f"{name} ({target}) - IPv{version[-1]}: Error - {str(e)}"
 
     with response_mtr_checks_lock:
         response_mtr_checks.append(output)
+
 
 def threading_mtr_checks():
     threads = []
