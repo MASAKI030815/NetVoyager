@@ -214,11 +214,11 @@ def check_mtr(target, name, version='ipv4'):
             for ip_address, replacement in (mtr_v4_mark_hosts + mtr_v6_mark_hosts):
                 highlighted_replacement = f"\033[92m{replacement}\033[0m"
                 highlighted_result = re.sub(r'\b{}\b'.format(re.escape(ip_address)), highlighted_replacement, highlighted_result)
-            output = f"\033[92mOK\033[0m: {name} ({target}) - IPv{version[-1]}\n{highlighted_result}"
+            output = f"\033[92mOK\033[0m：{name} ({target}) - IPv{version[-1]}\n{highlighted_result}"
         else:
-            output = f"\033[91mNG\033[0m: {name} ({target}) - IPv{version[-1]}: No result returned"
+            output = f"\033[91mNG\033[0m：{name} ({target}) - IPv{version[-1]}：No result returned"
     except Exception as e:
-        output = f"\033[91mNG\033[0m: {name} ({target}) - IPv{version[-1]}: Error - {str(e)}"
+        output = f"\033[91mNG\033[0m：{name} ({target}) - IPv{version[-1]}：Error - {str(e)}"
 
     with response_mtr_checks_lock:
         response_mtr_checks.append(output)
@@ -329,4 +329,4 @@ def update_cli():
 if __name__ == '__main__':       
     while True:
         update_cli()
-        time.sleep(5) 
+        time.sleep(10) 
