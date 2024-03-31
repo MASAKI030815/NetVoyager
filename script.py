@@ -12,22 +12,18 @@ interface = "eth0"
 pingv4_targets = [
     ["8.8.8.8", "Google DNS"],
     ["8.8.4.4", "Google DNS Backup"],
-    ["1.1.1.1", "Cloudflare DNS"],
-    ["1.0.0.1", "Cloudflare DNS Backup"]
 ]
-pingv4_large_option = ["-c", "1", "-M", "do", "-s", "1472", "-W", "1"]
-pingv4_short_option = ["-c", "1", "-s", "64", "-W", "1"]
 pingv6_targets = [
     ["2001:4860:4860::8888", "Google DNS IPv6"],
     ["2001:4860:4860::8844", "Google DNS Backup IPv6"],
-    ["2606:4700:4700::1111", "Cloudflare DNS IPv6"],
-    ["2606:4700:4700::1001", "Cloudflare DNS Backup IPv6"]
 ]
+pingv4_large_option = ["-c", "1", "-M", "do", "-s", "1472", "-W", "1"]
+pingv4_short_option = ["-c", "1", "-s", "64", "-W", "1"]
 pingv6_large_option = ["-c", "1", "-s", "1452", "-W", "1"]
 pingv6_short_option = ["-c", "1", "-s", "128", "-W", "1"]
 http_check_targets = [
     ["http://ipv4.google.com", "Google-IPv4"],
-    ["http://ipv6.google.com", "Google-IPv6"]
+    ["http://ipv6.google.com", "Google-IPv6"],
 ]
 virus_check_targets = [
     ["http://example.com/malicious_file", "Malicious File 1"],
