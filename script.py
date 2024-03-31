@@ -14,8 +14,8 @@ pingv4_targets = [
     ["8.8.4.4", "Google DNS Backup"],
 ]
 pingv6_targets = [
-    ["2001:4860:4860::8888", "Google DNS IPv6"],
-    ["2001:4860:4860::8844", "Google DNS Backup IPv6"],
+    ["2606:4700:4700::1111", "Cloudflare DNS IPv6"],
+    ["2606:4700:4700::1001", "Cloudflare DNS Backup IPv6"],
 ]
 pingv4_large_option = ["-c", "1", "-M", "do", "-s", "1472", "-W", "1"]
 pingv4_short_option = ["-c", "1", "-s", "64", "-W", "1"]
