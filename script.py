@@ -33,13 +33,13 @@ mtr_v4_targets = [
     ["139.130.4.5", "Australia DNS"],
 ]
 mtr_v6_targets = [
-    ["2001:4860:4860::8844", "Google DNS IPv6 Secondary"],
+    ["2001:4860:4860::8888", "Google DNS IPv6"],
 ]
 mtr_v4_mark_hosts = [
     ["139.130.4.5", "Australia DNS"],
 ]
 mtr_v6_mark_hosts = [
-    ["2001:4860:4860::8844", "Google DNS IPv6 Secondary"],
+    ["2001:4860:4860::8888", "Google DNS IPv6"],
 ]
 #-----------------------
 
