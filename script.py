@@ -305,9 +305,15 @@ def update_cli():
     for status in response_ping_internet_v6:
         print(status)
 
-    print("\033[1m\033[93m\n-------HTTP Results-------\033[0m")
+    print("\033[1m\033[93m\n-------HTTP IPv4 Results-------\033[0m")
     for status in response_http_checks:
-        print(status)
+        if "IPv4" in status:
+            print(status)
+
+    print("\033[1m\033[93m\n-------HTTP IPv6 Results-------\033[0m")
+    for status in response_http_checks:
+        if "IPv6" in status:
+            print(status)
 
     print("\033[1m\033[93m\n-------Virus Check Results-------\033[0m")
     for status in response_virus_checks:
