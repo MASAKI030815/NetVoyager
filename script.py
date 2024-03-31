@@ -329,4 +329,4 @@ def update_cli():
 if __name__ == '__main__':       
     while True:
         update_cli()
-        time.sleep(1) 
+        time.sleep(5) 
