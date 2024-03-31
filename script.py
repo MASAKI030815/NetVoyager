@@ -163,9 +163,9 @@ def theading_ping_internet_v6():
 def check_http_response(url, name):
     try:
         response = requests.get(url, timeout=10)
-        status = f"\033[92mOK ({response.status_code})\033[0m : {url} ({name})" if response.status_code == 200 else f"\033[91mNG ({response.status_code})\033[0m : {url} ({name})"
+        status = f"\033[92mOK\033[0m (\033[92m{response.status_code}\033[0m) : {url} ({name})" if response.status_code == 200 else f"\033[91mNG ({response.status_code})\033[0m : {url} ({name})"
     except requests.exceptions.RequestException as e:
-        status = f"\033[91mNG (Error)\033[0m : {url} ({name}) - {e}"
+        status = f"\033[91mNG\033[0m (\033[91mError\033[0m) : {url} ({name}) - {e}"
     with response_http_checks_lock:
         response_http_checks.append(status)
 
