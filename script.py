@@ -86,13 +86,11 @@ def ping_gateway_v4():
     gateways = netifaces.gateways()
     default_gateway = gateways['default'][netifaces.AF_INET][0]
     
-    # インターフェース指定オプションを追加
     short_packet_cmd = ["ping", "-I", interface] + pingv4_short_option + [default_gateway]
     short_packet_result = subprocess.run(short_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     short_status = "OK" if short_packet_result.returncode == 0 else "NG"
     short_color = "\033[92m" if short_status == "OK" else "\033[91m"
 
-    # インターフェース指定オプションを追加
     large_packet_cmd = ["ping", "-I", interface] + pingv4_large_option + [default_gateway]
     large_packet_result = subprocess.run(large_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     large_status = "OK" if large_packet_result.returncode == 0 else "NG"
@@ -211,14 +209,20 @@ def check_mtr(target, name, version='ipv4'):
 
     try:
         result = subprocess.run(mtr_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        highlighted_result = result.stdout
-        for ip_address, replacement in (mtr_v4_mark_hosts + mtr_v6_mark_hosts):
-            highlighted_replacement = f"\033[92m{replacement}\033[0m"
-            highlighted_result = re.sub(r'\b{}\b'.format(re.escape(ip_address)), highlighted_replacement, highlighted_result)
-
-        output = f"{name} ({target}) - IPv{version[-1]}:\n{highlighted_result}"
+        # MTRが成功した場合（出力がある場合）、結果を表示
+        if result.stdout:
+            highlighted_result = result.stdout
+            for ip_address, replacement in (mtr_v4_mark_hosts + mtr_v6_mark_hosts):
+                highlighted_replacement = f"\033[92m{replacement}\033[0m"
+                highlighted_result = re.sub(r'\b{}\b'.format(re.escape(ip_address)), highlighted_replacement, highlighted_result)
+            # 成功した場合のメッセージ
+            output = f"\033[92mOK\033[0m: {name} ({target}) - IPv{version[-1]}:\n{highlighted_result}"
+        else:
+            # MTRの結果が空の場合はNGとする
+            output = f"\033[91mNG\033[0m: {name} ({target}) - IPv{version[-1]}: No result returned"
     except Exception as e:
-        output = f"{name} ({target}) - IPv{version[-1]}: Error - {str(e)}"
+        # エラーが発生した場合のメッセージ
+        output = f"\033[91mNG\033[0m: {name} ({target}) - IPv{version[-1]}: Error - {str(e)}"
 
     with response_mtr_checks_lock:
         response_mtr_checks.append(output)
