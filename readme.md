@@ -1,6 +1,8 @@
 # Network Diagnostic Tool
 
-This script is a tool for conducting network diagnostics. It automatically checks IPv4 and IPv6 connectivity, HTTP responses, and access to specific malware download sites. The results of the diagnostics are displayed in real-time on the console, allowing you to quickly grasp the state of the network.
+This script is a tool for conducting network diagnostics.
+It automatically checks IPv4 and IPv6 connectivity, HTTP responses, and access to specific malware download sites.
+The results of the diagnostics are displayed in real-time on the console, allowing you to quickly grasp the state of the network.
 
 ## Features
 
