@@ -3,9 +3,10 @@ import re
 import config
 
 def myipaddr():
+    interface = config.interface
     # インターフェース名から IPv4 アドレスを取得
     try:
-        ip_cmd = f"ip addr show {config.interface}"
+        ip_cmd = f"ip addr show {interface}"
         result = subprocess.check_output(ip_cmd.split()).decode('utf-8')
         
         # IPv4 アドレスの抽出
