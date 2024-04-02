@@ -24,6 +24,8 @@ Execute the following command to install the necessary Python modules:
 
 ```bash
 pip install netifaces requests
+sudo apt update
+sudo apt install mtr
 ```
 
 ## How to Use
