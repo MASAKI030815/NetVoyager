@@ -6,7 +6,6 @@ import requests
 import subprocess
 import re
 
-
 #-----------------------
 interface = "eth0"
 pingv4_targets = [
