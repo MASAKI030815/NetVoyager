@@ -1,16 +1,17 @@
 import sys
 import time
-from myipaddr import myipaddr
 import config
+from myipaddr import myipaddr
+from ping_gateway_v4 import ping_gateway_v4
 
 def update_cli():
-    global response_myipaddr
+
 #    global response_ping_gateway_v4
 #    global response_ping_internet_v4
 #    global response_ping_internet_v6
 #    global response_mtr_checks
 
-    response_myipaddr = myipaddr()
+#    response_myipaddr = myipaddr()
 #    response_ping_gateway_v4 = ping_gateway_v4()
 #    response_ping_internet_v4.clear()
 #    response_ping_internet_v6.clear()
@@ -33,8 +34,8 @@ def update_cli():
     if ipv6_addr:
         print(f"IPv6 Address: {ipv6_addr}")
 
-#    print("\033[1m\033[93m\n-------Gateway Ping Result-------\033[0m")
-#    print(response_ping_gateway_v4)
+    print("\033[1m\033[93m\n-------Gateway Ping Result-------\033[0m")
+    print(ping_gateway_v4())
 
 #    print("\033[1m\033[93m\n-------IPv4 Ping Results-------\033[0m")
 #    for status in response_ping_internet_v4:
