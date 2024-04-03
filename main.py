@@ -39,8 +39,8 @@ def update_cli():
     print(ping_gateway_v4())
 
     print("\033[1m\033[93m\n-------IPv4 Ping Results-------\033[0m")
-    for status in config.pingv4_targets:
-        print(ping_internet_v4(status))
+    for response_ping_internet_v4 in config.pingv4_targets:
+        print(ping_internet_v4(response_ping_internet_v4))
 
 #    print("\033[1m\033[93m\n-------IPv6 Ping Results-------\033[0m")
 #    for status in response_ping_internet_v6:
