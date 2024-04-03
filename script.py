@@ -29,10 +29,10 @@ virus_check_targets = [
     ["http://example.org/bad_file", "Malicious File 2"]
 ]
 mtr_v4_targets = [
-    ["google.com", "Google DNS"],
+    ["8.8.8.8", "Google DNS"],
 ]
 mtr_v6_targets = [
-    ["ipv6test.google.com", "Google DNS IPv6"],
+    ["2001:4860:4860::8888", "Google DNS IPv6"],
 ]
 mtr_v4_mark_hosts = [
     ["google.com", "Google DNS"],
