@@ -36,11 +36,9 @@ mtr_v6_targets = [
 ]
 mtr_v4_mark_hosts = [
     ["8.8.8.8", "Google DNS"],
-    ["142.251.60.192", "test4"],
 ]
 mtr_v6_mark_hosts = [
     ["2001:4860:4860::8888", "Google DNS IPv6"],
-    ["2400:2000:2:0:1a:0:2:21", "yamada"],
 ]
 #-----------------------
 
