@@ -1,9 +1,5 @@
 import subprocess
 import config
-import threading
-
-response_ping_internet_v4 = []
-response_ping_internet_v4_lock = threading.Lock()
 
 def ping_internet_v4(host, name):
     short_packet_cmd = ["ping"] + config.pingv4_short_option + [host]
@@ -19,9 +15,6 @@ def ping_internet_v4(host, name):
     status = "OK" if short_status == "OK" and large_status == "OK" else "NG"
     status_color = "\033[92m" if status == "OK" else "\033[91m"
 
-    combined_status = f"{status_color}{status}\033[0m ({short_color}Short\033[0m / {large_color}Large\033[0m) : {host} ({name})"
+    response_ping_internet_v4 = f"{status_color}{status}\033[0m ({short_color}Short\033[0m / {large_color}Large\033[0m) : {host} ({name})"
     
-    with response_ping_internet_v4_lock:
-        response_ping_internet_v4.append(combined_status)
-        return response_ping_internet_v4
-    
+    return response_ping_internet_v4
