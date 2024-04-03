@@ -35,8 +35,6 @@ def update_cli():
     for host, name in config.pingv4_targets:
         print(ping_internet_v4(host, name, config.pingv4_short_option, config.pingv4_large_option))
 
-
-
 #    print("\033[1m\033[93m\n-------IPv6 Ping Results-------\033[0m")
 #    for status in response_ping_internet_v6:
 #        print(status)
