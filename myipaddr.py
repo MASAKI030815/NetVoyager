@@ -2,11 +2,10 @@ import subprocess
 import re
 import config
 
-def myipaddr():
-    interface = config.interface
+def myipaddr(): 
     # インターフェース名から IPv4 アドレスを取得
     try:
-        ip_cmd = f"ip addr show {interface}"
+        ip_cmd = f"ip addr show {config.interface}"
         result = subprocess.check_output(ip_cmd.split()).decode('utf-8')
         
         # IPv4 アドレスの抽出
@@ -27,7 +26,7 @@ def myipaddr():
         # ゲートウェイの取得
         gw_cmd = "ip route show default"
         gw_result = subprocess.check_output(gw_cmd.split()).decode('utf-8')
-        gw_pattern = rf'default via (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) dev {config.interface}'
+        gw_pattern = rf'default         (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
         gw_match = re.search(gw_pattern, gw_result)
         gateway = gw_match.group(1) if gw_match else None
         
