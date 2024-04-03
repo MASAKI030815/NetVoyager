@@ -9,8 +9,8 @@ pingv6_targets = [
 ]
 pingv4_large_option = ["-c", "1", "-M", "do", "-s", "3000", "-W", "1"]
 pingv4_short_option = ["-c", "1", "-s", "64", "-W", "1"]
-pingv6_large_option = ["-c", "5", "-s", "3000", "-W", "5"]
-pingv6_short_option = ["-c", "5", "-s", "128", "-W", "5"]
+pingv6_large_option = ["-c", "1", "-s", "3000", "-W", "1"]
+pingv6_short_option = ["-c", "1", "-s", "128", "-W", "1"]
 http_check_targets = [
     ["http://ipv4.google.com", "Google-IPv4"],
     ["http://ipv6test.google.com/", "Google-IPv6"],
