@@ -1,11 +1,10 @@
 import sys
 import time
-import threading
 import config
 from myipaddr import myipaddr
 from ping_gateway_v4 import ping_gateway_v4
 from ping_internet_v4 import ping_internet_v4
-
+from ping_internet_v6 import ping_internet_v6
 
 def update_cli():
     global response_myipaddr
@@ -35,9 +34,9 @@ def update_cli():
     for host, name in config.pingv4_targets:
         print(ping_internet_v4(host, name, config.pingv4_short_option, config.pingv4_large_option))
 
-#    print("\033[1m\033[93m\n-------IPv6 Ping Results-------\033[0m")
-#    for status in response_ping_internet_v6:
-#        print(status)
+    print("\033[1m\033[93m\n-------IPv6 Ping Results-------\033[0m")
+    for host, name in config.pingv6_targets:
+        print(ping_internet_v6(host, name, config.pingv6_short_option, config.pingv6_large_option))
 
 #    print("\033[1m\033[93m\n-------HTTP IPv4 Results-------\033[0m")
 #    for status in response_http_checks:
