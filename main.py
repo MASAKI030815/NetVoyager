@@ -3,6 +3,7 @@ import time
 import config
 from myipaddr import myipaddr
 from ping_gateway_v4 import ping_gateway_v4
+from ping_internet_v4 import ping_internet_v4
 
 def update_cli():
 
@@ -37,9 +38,9 @@ def update_cli():
     print("\033[1m\033[93m\n-------Gateway Ping Result-------\033[0m")
     print(ping_gateway_v4())
 
-#    print("\033[1m\033[93m\n-------IPv4 Ping Results-------\033[0m")
-#    for status in response_ping_internet_v4:
-#        print(status)
+    print("\033[1m\033[93m\n-------IPv4 Ping Results-------\033[0m")
+    for status in ping_internet_v4():
+        print(status)
 
 #    print("\033[1m\033[93m\n-------IPv6 Ping Results-------\033[0m")
 #    for status in response_ping_internet_v6:
