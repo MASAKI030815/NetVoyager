@@ -17,4 +17,4 @@ def ping_internet_v4(host, name):
 
     response_ping_internet_v4 = f"{status_color}{status}\033[0m ({short_color}Short\033[0m / {large_color}Large\033[0m) : {host} ({name})"
 
-    return response_ping_internet_v4
+    return status,response_ping_internet_v4
