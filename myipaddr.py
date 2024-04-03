@@ -26,7 +26,7 @@ def myipaddr():
         # ゲートウェイの取得
         gw_cmd = "route"
         gw_result = subprocess.check_output(gw_cmd.split()).decode('utf-8')
-        gw_pattern = rf'default (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) dev {config.interface}'
+        gw_pattern = rf'default (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
         gw_match = re.search(gw_pattern, gw_result)
         gateway = gw_match.group(1) if gw_match else None
         
