@@ -201,9 +201,11 @@ def threading_virus_checks():
         thread.join()
 
 def check_mtr(target, name, version='ipv4'):
-    mtr_cmd = ['mtr', '--report', '--report-cycles', '1']
+    mtr_cmd = ['mtr', '--report', '--report-cycles', '1', '-n']
     if version == 'ipv6':
         mtr_cmd.append('-6')
+    else:
+        mtr_cmd.append('-4') 
     mtr_cmd.append(target)
 
     try:
