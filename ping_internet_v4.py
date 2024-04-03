@@ -23,4 +23,5 @@ def ping_internet_v4(host, name):
     
     with response_ping_internet_v4_lock:
         response_ping_internet_v4.append(combined_status)
-
+        return response_ping_internet_v4
+    
