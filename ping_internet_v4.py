@@ -2,6 +2,7 @@ import subprocess
 import config
 
 def ping_internet_v4(host, name):
+    response_ping_internet_v4 = ""
     short_packet_cmd = ["ping"] + config.pingv4_short_option + [host]
     short_packet_result = subprocess.run(short_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     short_status = "OK" if short_packet_result.returncode == 0 else "NG"
