@@ -6,7 +6,8 @@ import threading
 response_ping_internet_v4 = []
 response_ping_internet_v4_lock = threading.Lock()
 
-def ping_internet_v4(host, name):
+def ping_internet_v4(host,name):
+    
     short_packet_cmd = ["ping"] + config.pingv4_short_option + [host]
     short_packet_result = subprocess.run(short_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     short_status = "OK" if short_packet_result.returncode == 0 else "NG"
@@ -24,6 +25,7 @@ def ping_internet_v4(host, name):
     
     with response_ping_internet_v4_lock:
         response_ping_internet_v4.append(combined_status)
+        return response_ping_internet_v4
     
 def theading_ping_internet_v4():
     threads = []
