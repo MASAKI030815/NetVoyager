@@ -6,45 +6,7 @@ import requests
 import subprocess
 import re
 import config
-
-#-----------------------
-#interface = "eth0"
-#pingv4_targets = [
-#    ["8.8.8.8", "Google DNS"],
-#    ["8.8.4.4", "Google DNS Backup"],
-#]
-#pingv6_targets = [
-#    ["2001:4860:4860::8888", "Google DNS IPv6"],
-#    ["2001:4860:4860::8844", "Google DNS Backup IPv6"],
-#]
-#pingv4_short_option = ["-c", "2", "-s", "64", "-W", "1"]
-#pingv4_large_option = ["-c", "2", "-M", "do", "-s", "1000", "-W", "1"]
-#pingv6_short_option = ["-c", "2", "-s", "128", "-W", "1"]
-#pingv6_large_option = ["-c", "2", "-s", "1000", "-W", "1"]
-#http_check_targets = [
-#    ["http://ipv4.google.com", "Google-IPv4"],
-#    ["http://ipv6test.google.com/", "Google-IPv6"],
-#]
-#virus_check_targets = [
-#    ["http://urlfiltering.paloaltonetworks.com/test-command-and-control", "Palo virus check_1"],
-#    ["http://urlfiltering.paloaltonetworks.com/test-malware", "Palo virus check_2"],
-#    ["http://urlfiltering.paloaltonetworks.com/test-phishing","Palo virus check_3"],
-#    ["http://urlfiltering.paloaltonetworks.com/test-ransomware","Palo virus check_4"],
-#    ["http://wildfire.paloaltonetworks.com/publicapi/test/pe","Palo virus check_5"],
-#]
-#mtr_v4_targets = [
-#    ["8.8.8.8", "Google DNS"],
-#]
-#mtr_v6_targets = [
-#    ["2001:4860:4860::8888", "Google DNS IPv6"],
-#]
-#mtr_v4_mark_hosts = [
-#    ["8.8.8.8", "Google DNS"],
-#]
-#mtr_v6_mark_hosts = [
-#    ["2001:4860:4860::8888", "Google DNS IPv6"],
-#]
-#-----------------------
+import myipaddr
 
 response_myipaddr = ""
 response_ping_gateway_v4 = ""
@@ -59,29 +21,29 @@ response_virus_checks_lock = threading.Lock()
 response_mtr_checks = []
 response_mtr_checks_lock = threading.Lock()
 
-def myipaddr():
-    ipv6_addr = None
-    ipv4_addr = None
-    netmask = None
-    gateway = None
-    try:
-        addrs = netifaces.ifaddresses(config.interface)
-        if netifaces.AF_INET in addrs:
-            ipv4_info = addrs[netifaces.AF_INET][0]
-            ipv4_addr = ipv4_info.get('addr')
-            netmask = ipv4_info.get('netmask')
-        gateways = netifaces.gateways()
-        if netifaces.AF_INET in gateways['default']:
-            gateway = gateways['default'][netifaces.AF_INET][0]
-        if netifaces.AF_INET6 in addrs:
-            for addr_info in addrs[netifaces.AF_INET6]:
-                if addr_info['addr'].startswith('fe80') is False:
-                    ipv6_addr = addr_info['addr'].split('%')[0]
-                    break
-    except Exception as e:
-        print(f"IPアドレス取得中にエラーが発生しました: {e}")
-
-    return ipv4_addr, netmask, gateway, ipv6_addr
+#def myipaddr():
+#    ipv6_addr = None
+#    ipv4_addr = None
+#    netmask = None
+#    gateway = None
+#    try:
+#        addrs = netifaces.ifaddresses(config.interface)
+#        if netifaces.AF_INET in addrs:
+#            ipv4_info = addrs[netifaces.AF_INET][0]
+#            ipv4_addr = ipv4_info.get('addr')
+#            netmask = ipv4_info.get('netmask')
+#        gateways = netifaces.gateways()
+#        if netifaces.AF_INET in gateways['default']:
+#            gateway = gateways['default'][netifaces.AF_INET][0]
+#        if netifaces.AF_INET6 in addrs:
+#            for addr_info in addrs[netifaces.AF_INET6]:
+#                if addr_info['addr'].startswith('fe80') is False:
+#                    ipv6_addr = addr_info['addr'].split('%')[0]
+#                    break
+#    except Exception as e:
+#        print(f"IPアドレス取得中にエラーが発生しました: {e}")
+#
+#    return ipv4_addr, netmask, gateway, ipv6_addr
 
 def ping_gateway_v4():
     gateways = netifaces.gateways()
