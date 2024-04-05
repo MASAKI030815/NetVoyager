@@ -25,8 +25,11 @@ http_check_targets = [
     ["http://ipv6test.google.com/", "Google-IPv6"],
 ]
 virus_check_targets = [
-    ["http://example.com/malicious_file", "Malicious File 1"],
-    ["http://example.org/bad_file", "Malicious File 2"]
+    ["http://urlfiltering.paloaltonetworks.com/test-command-and-control", "Palo virus check_1"],
+    ["http://urlfiltering.paloaltonetworks.com/test-malware", "Palo virus check_2"],
+    ["http://urlfiltering.paloaltonetworks.com/test-phishing","Palo virus check_3"],
+    ["http://urlfiltering.paloaltonetworks.com/test-ransomware","Palo virus check_4"]
+    ["http://wildfire.paloaltonetworks.com/publicapi/test/pe","Palo virus check_5"],
 ]
 mtr_v4_targets = [
     ["8.8.8.8", "Google DNS"],
@@ -170,15 +173,10 @@ def check_http_response(url, name):
 
 def check_virus_download(url, name):
     try:
-        local_filename = url.split('/')[-1]
-        with requests.get(url, stream=True) as r:
-            r.raise_for_status()
-            with open(local_filename, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=8192):
-                    f.write(chunk)
-            status = f"\033[92mOK\033[0m : {url} ({name}) - Downloaded as {local_filename}"
+        response = requests.get(url, timeout=10)
+        status = f"\033[92mOK\033[0m (\033[92m{response.status_code}\033[0m) : {url} ({name})" if response.status_code == 200 else f"\033[91mNG ({response.status_code})\033[0m : {url} ({name})"
     except requests.exceptions.RequestException as e:
-        status = f"\033[91mNG\033[0m : {url} ({name}) - {str(e)}"
+        status = f"\033[91mNG\033[0m (\033[91mError\033[0m) : {url} ({name}) - {e}"
     with response_virus_checks_lock:
         response_virus_checks.append(status)
 
