@@ -59,7 +59,6 @@ response_mtr_checks = []
 response_mtr_checks_lock = threading.Lock()
 
 def myipaddr():
-    #global interface
     ipv6_addr = None
     ipv4_addr = None
     netmask = None
@@ -84,7 +83,6 @@ def myipaddr():
     return ipv4_addr, netmask, gateway, ipv6_addr
 
 def ping_gateway_v4():
-    #global interface
     gateways = netifaces.gateways()
     default_gateway = gateways['default'][netifaces.AF_INET][0]
     
@@ -247,13 +245,6 @@ def threading_ping_v6():
     return thread
 
 def update_cli():
-    #global response_myipaddr
-    #global response_ping_gateway_v4
-    #global response_ping_internet_v4
-    #global response_ping_internet_v6
-    #global response_mtr_checks
-
-    #response_myipaddr = myipaddr()
     response_ping_gateway_v4 = ping_gateway_v4()
     response_ping_internet_v4.clear()
     response_ping_internet_v6.clear()
