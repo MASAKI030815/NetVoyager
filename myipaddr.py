@@ -1,35 +1,26 @@
-import subprocess
-import re
+import netifaces
 import config
 
 def myipaddr():
-    # インターフェース名から IPv4 アドレスを取得
+    ipv6_addr = None
+    ipv4_addr = None
+    netmask = None
+    gateway = None
     try:
-        ip_cmd = f"ip addr show {config.interface}"
-        result = subprocess.check_output(ip_cmd.split()).decode('utf-8')
-        
-        # IPv4 アドレスの抽出
-        ipv4_pattern = r'inet (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
-        ipv4_match = re.search(ipv4_pattern, result)
-        ipv4_addr = ipv4_match.group(1) if ipv4_match else None
-        
-        # ネットマスクの抽出
-        netmask_pattern = r'inet \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/(\d{1,2})'
-        netmask_match = re.search(netmask_pattern, result)
-        netmask = netmask_match.group(1) if netmask_match else None
-
-        # IPv6 アドレスの抽出
-        ipv6_pattern = r'inet6 ([a-f0-9:]+)/\d{1,3} scope global'
-        ipv6_match = re.search(ipv6_pattern, result)
-        ipv6_addr = ipv6_match.group(1) if ipv6_match else None
-
-        # ゲートウェイの取得
-        gw_cmd = "ip route show default"
-        gw_result = subprocess.check_output(gw_cmd.split()).decode('utf-8')
-        gw_pattern = r'default via (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
-        gw_match = re.search(gw_pattern, gw_result)
-        gateway = gw_match.group(1) if gw_match else None       
-        return ipv4_addr, netmask, gateway, ipv6_addr
+        addrs = netifaces.ifaddresses(config.interface)
+        if netifaces.AF_INET in addrs:
+            ipv4_info = addrs[netifaces.AF_INET][0]
+            ipv4_addr = ipv4_info.get('addr')
+            netmask = ipv4_info.get('netmask')
+        gateways = netifaces.gateways()
+        if netifaces.AF_INET in gateways['default']:
+            gateway = gateways['default'][netifaces.AF_INET][0]
+        if netifaces.AF_INET6 in addrs:
+            for addr_info in addrs[netifaces.AF_INET6]:
+                if addr_info['addr'].startswith('fe80') is False:
+                    ipv6_addr = addr_info['addr'].split('%')[0]
+                    break
     except Exception as e:
         print(f"IPアドレス取得中にエラーが発生しました: {e}")
-        return None, None, None, None
+
+    return ipv4_addr, netmask, gateway, ipv6_addr

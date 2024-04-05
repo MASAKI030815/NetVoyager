@@ -2,6 +2,7 @@ import subprocess
 import config
 import threading
 
+
 response_ping_internet_v4 = []
 response_ping_internet_v4_lock = threading.Lock()
 
@@ -24,3 +25,17 @@ def ping_internet_v4(host, name):
     with response_ping_internet_v4_lock:
         response_ping_internet_v4.append(combined_status)
     
+def theading_ping_internet_v4():
+    threads = []
+    for i in range(len(config.pingv4_targets)):
+        thread = threading.Thread(target=ping_internet_v4, args=(config.pingv4_targets[i][0], config.pingv4_targets[i][1]))
+        threads.append(thread)
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+def threading_ping_v4():
+    thread = threading.Thread(target=theading_ping_internet_v4)
+    thread.start()
+    return thread
+
