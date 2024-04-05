@@ -2,11 +2,11 @@ import subprocess
 import config
 import threading
 
-response_ping_internet_v4 = []
 #response_ping_internet_v4 = []
 #response_ping_internet_v4_lock = threading.Lock()
 
 def ping_internet_v4(host,name,pingv4_short_option,pingv4_large_option):
+    response_ping_internet_v4 = []
     short_packet_cmd = ["ping"] + pingv4_short_option + [host]
     short_packet_result = subprocess.run(short_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     short_status = "OK" if short_packet_result.returncode == 0 else "NG"
