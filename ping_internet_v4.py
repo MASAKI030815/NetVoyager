@@ -2,7 +2,7 @@ import subprocess
 import config
 import threading
 
-response_ping_internet_v4 = None
+response_ping_internet_v4 = []
 #response_ping_internet_v4 = []
 #response_ping_internet_v4_lock = threading.Lock()
 
