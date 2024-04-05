@@ -4,6 +4,8 @@ import netifaces
 
 def ping_gateway_v4():
     
+    host,name = config.
+
     gateways = netifaces.gateways()
     default_gateway = gateways['default'][netifaces.AF_INET][0]
     
