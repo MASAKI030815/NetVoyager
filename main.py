@@ -31,9 +31,10 @@ def update_cli():
     print(response_ping_gateway_v4)
 
     print("\033[1m\033[93m\n-------IPv4 Ping Results-------\033[0m")
-    for host, name in config.pingv4_targets:
-        print(ping_internet_v4(host, name, config.pingv4_short_option, config.pingv4_large_option))
-"""
+    #for host, name in config.pingv4_targets:
+    #print(ping_internet_v4(host, name, config.pingv4_short_option, config.pingv4_large_option))
+    ping_internet_v4()
+    """
     print("\033[1m\033[93m\n-------IPv6 Ping Results-------\033[0m")
     for host, name in config.pingv6_targets:
         print(ping_internet_v6(host, name, config.pingv6_short_option, config.pingv6_large_option))
