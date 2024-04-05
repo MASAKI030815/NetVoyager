@@ -6,14 +6,13 @@ import threading
 response_ping_internet_v4 = []
 response_ping_internet_v4_lock = threading.Lock()
 
-def ping_internet_v4(host,name):
-    
-    short_packet_cmd = ["ping"] + config.pingv4_short_option + [host]
+def ping_internet_v4(host,name,pingv4_short_option,pingv4_large_option):
+    short_packet_cmd = ["ping"] + pingv4_short_option + [host]
     short_packet_result = subprocess.run(short_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     short_status = "OK" if short_packet_result.returncode == 0 else "NG"
     short_color = "\033[92m" if short_status == "OK" else "\033[91m"
 
-    large_packet_cmd = ["ping"] + config.pingv4_large_option + [host]
+    large_packet_cmd = ["ping"] + pingv4_large_option + [host]
     large_packet_result = subprocess.run(large_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     large_status = "OK" if large_packet_result.returncode == 0 else "NG"
     large_color = "\033[92m" if large_status == "OK" else "\033[91m"
