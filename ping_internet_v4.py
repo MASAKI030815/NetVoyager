@@ -25,7 +25,7 @@ def ping_internet_v4(host,name,pingv4_short_option,pingv4_large_option):
     #with response_ping_internet_v4_lock:
     #    response_ping_internet_v4.append(combined_status)
     #    return response_ping_internet_v4
-    response_ping_internet_v4.append(combined_status)
+    response_ping_internet_v4.append(str(combined_status))
     return response_ping_internet_v4
 #def theading_ping_internet_v4():
 #    threads = []
