@@ -3,7 +3,6 @@ import subprocess
 import netifaces
 
 def ping_gateway_v4():
-    global interface
     gateways = netifaces.gateways()
     default_gateway = gateways['default'][netifaces.AF_INET][0]
     
@@ -20,7 +19,6 @@ def ping_gateway_v4():
     status = "OK" if short_status == "OK" and large_status == "OK" else "NG"
     status_color = "\033[92m" if status == "OK" else "\033[91m"
 
-    response_ping_gateway_v4 = f"{status_color}{status}\033[0m ({short_color}Short\033[0m / {large_color}Large\033[0m) : {default_gateway}"
+    combined_status = f"{status_color}{status}\033[0m ({short_color}Short\033[0m / {large_color}Large\033[0m) : {default_gateway}"
 
-    return response_ping_gateway_v4
- 
+    return combined_status
