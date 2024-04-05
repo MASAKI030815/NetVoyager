@@ -5,44 +5,45 @@ import netifaces
 import requests
 import subprocess
 import re
+import config
 
 #-----------------------
-interface = "eth0"
-pingv4_targets = [
-    ["8.8.8.8", "Google DNS"],
-    ["8.8.4.4", "Google DNS Backup"],
-]
-pingv6_targets = [
-    ["2001:4860:4860::8888", "Google DNS IPv6"],
-    ["2001:4860:4860::8844", "Google DNS Backup IPv6"],
-]
-pingv4_short_option = ["-c", "2", "-s", "64", "-W", "1"]
-pingv4_large_option = ["-c", "2", "-M", "do", "-s", "1000", "-W", "1"]
-pingv6_short_option = ["-c", "2", "-s", "128", "-W", "1"]
-pingv6_large_option = ["-c", "2", "-s", "1000", "-W", "1"]
-http_check_targets = [
-    ["http://ipv4.google.com", "Google-IPv4"],
-    ["http://ipv6test.google.com/", "Google-IPv6"],
-]
-virus_check_targets = [
-    ["http://urlfiltering.paloaltonetworks.com/test-command-and-control", "Palo virus check_1"],
-    ["http://urlfiltering.paloaltonetworks.com/test-malware", "Palo virus check_2"],
-    ["http://urlfiltering.paloaltonetworks.com/test-phishing","Palo virus check_3"],
-    ["http://urlfiltering.paloaltonetworks.com/test-ransomware","Palo virus check_4"],
-    ["http://wildfire.paloaltonetworks.com/publicapi/test/pe","Palo virus check_5"],
-]
-mtr_v4_targets = [
-    ["8.8.8.8", "Google DNS"],
-]
-mtr_v6_targets = [
-    ["2001:4860:4860::8888", "Google DNS IPv6"],
-]
-mtr_v4_mark_hosts = [
-    ["8.8.8.8", "Google DNS"],
-]
-mtr_v6_mark_hosts = [
-    ["2001:4860:4860::8888", "Google DNS IPv6"],
-]
+#interface = "eth0"
+#pingv4_targets = [
+#    ["8.8.8.8", "Google DNS"],
+#    ["8.8.4.4", "Google DNS Backup"],
+#]
+#pingv6_targets = [
+#    ["2001:4860:4860::8888", "Google DNS IPv6"],
+#    ["2001:4860:4860::8844", "Google DNS Backup IPv6"],
+#]
+#pingv4_short_option = ["-c", "2", "-s", "64", "-W", "1"]
+#pingv4_large_option = ["-c", "2", "-M", "do", "-s", "1000", "-W", "1"]
+#pingv6_short_option = ["-c", "2", "-s", "128", "-W", "1"]
+#pingv6_large_option = ["-c", "2", "-s", "1000", "-W", "1"]
+#http_check_targets = [
+#    ["http://ipv4.google.com", "Google-IPv4"],
+#    ["http://ipv6test.google.com/", "Google-IPv6"],
+#]
+#virus_check_targets = [
+#    ["http://urlfiltering.paloaltonetworks.com/test-command-and-control", "Palo virus check_1"],
+#    ["http://urlfiltering.paloaltonetworks.com/test-malware", "Palo virus check_2"],
+#    ["http://urlfiltering.paloaltonetworks.com/test-phishing","Palo virus check_3"],
+#    ["http://urlfiltering.paloaltonetworks.com/test-ransomware","Palo virus check_4"],
+#    ["http://wildfire.paloaltonetworks.com/publicapi/test/pe","Palo virus check_5"],
+#]
+#mtr_v4_targets = [
+#    ["8.8.8.8", "Google DNS"],
+#]
+#mtr_v6_targets = [
+#    ["2001:4860:4860::8888", "Google DNS IPv6"],
+#]
+#mtr_v4_mark_hosts = [
+#    ["8.8.8.8", "Google DNS"],
+#]
+#mtr_v6_mark_hosts = [
+#    ["2001:4860:4860::8888", "Google DNS IPv6"],
+#]
 #-----------------------
 
 response_myipaddr = ""
@@ -64,7 +65,7 @@ def myipaddr():
     netmask = None
     gateway = None
     try:
-        addrs = netifaces.ifaddresses(interface)
+        addrs = netifaces.ifaddresses(config.interface)
         if netifaces.AF_INET in addrs:
             ipv4_info = addrs[netifaces.AF_INET][0]
             ipv4_addr = ipv4_info.get('addr')
@@ -86,12 +87,12 @@ def ping_gateway_v4():
     gateways = netifaces.gateways()
     default_gateway = gateways['default'][netifaces.AF_INET][0]
     
-    short_packet_cmd = ["ping", "-I", interface] + pingv4_short_option + [default_gateway]
+    short_packet_cmd = ["ping", "-I", config.interface] + config.hort_option + [default_gateway]
     short_packet_result = subprocess.run(short_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     short_status = "OK" if short_packet_result.returncode == 0 else "NG"
     short_color = "\033[92m" if short_status == "OK" else "\033[91m"
 
-    large_packet_cmd = ["ping", "-I", interface] + pingv4_large_option + [default_gateway]
+    large_packet_cmd = ["ping", "-I", config.interface] + config.pingv4_large_option + [default_gateway]
     large_packet_result = subprocess.run(large_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     large_status = "OK" if large_packet_result.returncode == 0 else "NG"
     large_color = "\033[92m" if large_status == "OK" else "\033[91m"
@@ -104,12 +105,12 @@ def ping_gateway_v4():
     return combined_status
 
 def ping_internet_v4(host, name):
-    short_packet_cmd = ["ping"] + pingv4_short_option + [host]
+    short_packet_cmd = ["ping"] + config.pingv4_short_option + [host]
     short_packet_result = subprocess.run(short_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     short_status = "OK" if short_packet_result.returncode == 0 else "NG"
     short_color = "\033[92m" if short_status == "OK" else "\033[91m"
 
-    large_packet_cmd = ["ping"] + pingv4_large_option + [host]
+    large_packet_cmd = ["ping"] + config.pingv4_large_option + [host]
     large_packet_result = subprocess.run(large_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     large_status = "OK" if large_packet_result.returncode == 0 else "NG"
     large_color = "\033[92m" if large_status == "OK" else "\033[91m"
@@ -123,12 +124,12 @@ def ping_internet_v4(host, name):
         response_ping_internet_v4.append(combined_status)
 
 def ping_internet_v6(host, name):
-    short_packet_cmd = ["ping6"] + pingv6_short_option + [host]
+    short_packet_cmd = ["ping6"] + config.pingv6_short_option + [host]
     short_packet_result = subprocess.run(short_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     short_status = "OK" if short_packet_result.returncode == 0 else "NG"
     short_color = "\033[92m" if short_status == "OK" else "\033[91m"
 
-    large_packet_cmd = ["ping6"] + pingv6_large_option + [host]
+    large_packet_cmd = ["ping6"] + config.pingv6_large_option + [host]
     large_packet_result = subprocess.run(large_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     large_status = "OK" if large_packet_result.returncode == 0 else "NG"
     large_color = "\033[92m" if large_status == "OK" else "\033[91m"
@@ -144,8 +145,8 @@ def ping_internet_v6(host, name):
 
 def theading_ping_internet_v4():
     threads = []
-    for i in range(len(pingv4_targets)):
-        thread = threading.Thread(target=ping_internet_v4, args=(pingv4_targets[i][0], pingv4_targets[i][1]))
+    for i in range(len(config.pingv4_targets)):
+        thread = threading.Thread(target=ping_internet_v4, args=(config.pingv4_targets[i][0], config.pingv4_targets[i][1]))
         threads.append(thread)
         thread.start()
     for thread in threads:
@@ -153,8 +154,8 @@ def theading_ping_internet_v4():
 
 def theading_ping_internet_v6():
     threads = []
-    for i in range(len(pingv6_targets)):
-        thread = threading.Thread(target=ping_internet_v6, args=(pingv6_targets[i][0], pingv6_targets[i][1]))
+    for i in range(len(config.pingv6_targets)):
+        thread = threading.Thread(target=ping_internet_v6, args=(config.pingv6_targets[i][0], config.pingv6_targets[i][1]))
         threads.append(thread)
         thread.start()
     for thread in threads:
@@ -180,7 +181,7 @@ def check_virus_download(url, name):
 
 def threading_http_checks():
     threads = []
-    for target in http_check_targets:
+    for target in config.http_check_targets:
         thread = threading.Thread(target=check_http_response, args=(target[0], target[1]))
         threads.append(thread)
         thread.start()
@@ -189,7 +190,7 @@ def threading_http_checks():
 
 def threading_virus_checks():
     threads = []
-    for target in virus_check_targets:
+    for target in config.virus_check_targets:
         thread = threading.Thread(target=check_virus_download, args=(target[0], target[1]))
         threads.append(thread)
         thread.start()
@@ -208,7 +209,7 @@ def check_mtr(target, name, version='ipv4'):
         result = subprocess.run(mtr_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         if result.stdout:
             highlighted_result = result.stdout
-            for ip_address, replacement in (mtr_v4_mark_hosts + mtr_v6_mark_hosts):
+            for ip_address, replacement in (config.mtr_v4_mark_hosts + config.mtr_v6_mark_hosts):
                 highlighted_replacement = f"\033[92m{replacement}\033[0m"
                 highlighted_result = re.sub(r'\b{}\b'.format(re.escape(ip_address)), highlighted_replacement, highlighted_result)
             output = f"\033[92mOK\033[0m：{name} ({target}) - IPv{version[-1]}\n{highlighted_result}"
@@ -223,11 +224,11 @@ def check_mtr(target, name, version='ipv4'):
 
 def threading_mtr_checks():
     threads = []
-    for target in mtr_v4_targets:
+    for target in config.mtr_v4_targets:
         thread = threading.Thread(target=check_mtr, args=(target[0], target[1], 'ipv4'))
         threads.append(thread)
         thread.start()
-    for target in mtr_v6_targets:
+    for target in config.mtr_v6_targets:
         thread = threading.Thread(target=check_mtr, args=(target[0], target[1], 'ipv6'))
         threads.append(thread)
         thread.start()
@@ -272,7 +273,7 @@ def update_cli():
     ipv4_addr, netmask, gateway, ipv6_addr = myipaddr()
 
     print("\033[1m\033[93m-------Network Setting-------\033[0m")
-    print(f"Interface: {interface}")
+    print(f"Interface: {config.interface}")
     if ipv4_addr and netmask:
         print(f"IPv4 Address: {ipv4_addr}")
         print(f"Netmask: {netmask}")
