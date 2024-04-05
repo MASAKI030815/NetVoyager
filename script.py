@@ -28,7 +28,7 @@ virus_check_targets = [
     ["http://urlfiltering.paloaltonetworks.com/test-command-and-control", "Palo virus check_1"],
     ["http://urlfiltering.paloaltonetworks.com/test-malware", "Palo virus check_2"],
     ["http://urlfiltering.paloaltonetworks.com/test-phishing","Palo virus check_3"],
-    ["http://urlfiltering.paloaltonetworks.com/test-ransomware","Palo virus check_4"]
+    ["http://urlfiltering.paloaltonetworks.com/test-ransomware","Palo virus check_4"],
     ["http://wildfire.paloaltonetworks.com/publicapi/test/pe","Palo virus check_5"],
 ]
 mtr_v4_targets = [
