@@ -21,35 +21,11 @@ response_virus_checks_lock = threading.Lock()
 response_mtr_checks = []
 response_mtr_checks_lock = threading.Lock()
 
-#def myipaddr():
-#    ipv6_addr = None
-#    ipv4_addr = None
-#    netmask = None
-#    gateway = None
-#    try:
-#        addrs = netifaces.ifaddresses(config.interface)
-#        if netifaces.AF_INET in addrs:
-#            ipv4_info = addrs[netifaces.AF_INET][0]
-#            ipv4_addr = ipv4_info.get('addr')
-#            netmask = ipv4_info.get('netmask')
-#        gateways = netifaces.gateways()
-#        if netifaces.AF_INET in gateways['default']:
-#            gateway = gateways['default'][netifaces.AF_INET][0]
-#        if netifaces.AF_INET6 in addrs:
-#            for addr_info in addrs[netifaces.AF_INET6]:
-#                if addr_info['addr'].startswith('fe80') is False:
-#                    ipv6_addr = addr_info['addr'].split('%')[0]
-#                    break
-#    except Exception as e:
-#        print(f"IPアドレス取得中にエラーが発生しました: {e}")
-#
-#    return ipv4_addr, netmask, gateway, ipv6_addr
-
 def ping_gateway_v4():
     gateways = netifaces.gateways()
     default_gateway = gateways['default'][netifaces.AF_INET][0]
     
-    short_packet_cmd = ["ping", "-I", config.interface] + config.hort_option + [default_gateway]
+    short_packet_cmd = ["ping", "-I", config.interface] + config.pingv4_short_option + [default_gateway]
     short_packet_result = subprocess.run(short_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     short_status = "OK" if short_packet_result.returncode == 0 else "NG"
     short_color = "\033[92m" if short_status == "OK" else "\033[91m"
