@@ -4,10 +4,13 @@ import sys
 import netifaces
 import requests
 import subprocess
-import re
+import mtrpacket
+import socket
+import asyncio
+
 
 #-----------------------
-interface = "eth0"
+interface = "{1984C643-096C-42F0-8CD9-48BAD766A457}"
 pingv4_targets = [
     ["8.8.8.8", "Google DNS"],
     ["8.8.4.4", "Google DNS Backup"],
@@ -16,10 +19,23 @@ pingv6_targets = [
     ["2001:4860:4860::8888", "Google DNS IPv6"],
     ["2001:4860:4860::8844", "Google DNS Backup IPv6"],
 ]
+
+
+#Windows
+
+pingv4_short_option = ["-4 -n 1 -w 1"]
+pingv4_large_option = ["-4 -n 1 -l 1472 -w 1"]
+pingv6_short_option = ["-6 -n 1 -w 1"]
+pingv6_large_option = ["-6 -n 1 -l 1452 -w 1"]
+
+"""#Linux
 pingv4_large_option = ["-c", "2", "-M", "do", "-s", "1472", "-W", "1"]
 pingv4_short_option = ["-c", "2", "-s", "64", "-W", "1"]
 pingv6_large_option = ["-c", "2", "-s", "1300", "-W", "1"]
 pingv6_short_option = ["-c", "2", "-s", "128", "-W", "1"]
+"""
+
+
 http_check_targets = [
     ["http://ipv4.google.com", "Google-IPv4"],
     ["http://ipv6test.google.com/", "Google-IPv6"],
@@ -88,12 +104,12 @@ def ping_gateway_v4():
     gateways = netifaces.gateways()
     default_gateway = gateways['default'][netifaces.AF_INET][0]
     
-    short_packet_cmd = ["ping", "-I", interface] + pingv4_short_option + [default_gateway]
+    short_packet_cmd = ["ping"] + pingv4_short_option + [default_gateway]
     short_packet_result = subprocess.run(short_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     short_status = "OK" if short_packet_result.returncode == 0 else "NG"
     short_color = "\033[92m" if short_status == "OK" else "\033[91m"
 
-    large_packet_cmd = ["ping", "-I", interface] + pingv4_large_option + [default_gateway]
+    large_packet_cmd = ["ping"] + pingv4_large_option + [default_gateway]
     large_packet_result = subprocess.run(large_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     large_status = "OK" if large_packet_result.returncode == 0 else "NG"
     large_color = "\033[92m" if large_status == "OK" else "\033[91m"
@@ -125,12 +141,12 @@ def ping_internet_v4(host, name):
         response_ping_internet_v4.append(combined_status)
 
 def ping_internet_v6(host, name):
-    short_packet_cmd = ["ping6"] + pingv6_short_option + [host]
+    short_packet_cmd = ["ping"] + pingv6_short_option + [host]
     short_packet_result = subprocess.run(short_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     short_status = "OK" if short_packet_result.returncode == 0 else "NG"
     short_color = "\033[92m" if short_status == "OK" else "\033[91m"
 
-    large_packet_cmd = ["ping6"] + pingv6_large_option + [host]
+    large_packet_cmd = ["ping"] + pingv6_large_option + [host]
     large_packet_result = subprocess.run(large_packet_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     large_status = "OK" if large_packet_result.returncode == 0 else "NG"
     large_color = "\033[92m" if large_status == "OK" else "\033[91m"
@@ -198,30 +214,36 @@ def threading_virus_checks():
     for thread in threads:
         thread.join()
 
+async def async_probe(mtr, target, ttl, timeout):
+    return await mtr.probe(target, ttl=ttl, timeout=timeout)
+
 def check_mtr(target, name, version='ipv4'):
-    mtr_cmd = ['mtr', '--report', '--report-cycles', '1', '-n']
-    if version == 'ipv6':
-        mtr_cmd.append('-6')
-    else:
-        mtr_cmd.append('-4') 
-    mtr_cmd.append(target)
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    results = []
+    mtr = mtrpacket.MtrPacket()
 
     try:
-        result = subprocess.run(mtr_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if result.stdout:
-            highlighted_result = result.stdout
-            for ip_address, replacement in (mtr_v4_mark_hosts + mtr_v6_mark_hosts):
-                highlighted_replacement = f"\033[92m{replacement}\033[0m"
-                highlighted_result = re.sub(r'\b{}\b'.format(re.escape(ip_address)), highlighted_replacement, highlighted_result)
-            output = f"\033[92mOK\033[0m：{name} ({target}) - IPv{version[-1]}\n{highlighted_result}"
-        else:
-            output = f"\033[91mNG\033[0m：{name} ({target}) - IPv{version[-1]}：No result returned"
-    except Exception as e:
-        output = f"\033[91mNG\033[0m：{name} ({target}) - IPv{version[-1]}：Error - {str(e)}"
+        # MtrPacket インスタンスの初期化
+        for ttl in range(1, 31):
+            result = loop.run_until_complete(async_probe(mtr, target, ttl, timeout=1000))
+            if result is None or not result.success:
+                results.append(f"{ttl} * * *")
+            else:
+                response_time = f"{result.time_ms} ms"
+                results.append(f"{ttl} {result.responder or '*'} {response_time}")
 
+            if result and result.responder == target:
+                break
+    except Exception as e:
+        print(f"Error during MTR probe: {e}")
+    finally:
+        loop.close()
+
+    output = f"\033[92mOK\033[0m：{name} ({target}) - IPv{version[-1]}\n" + "\n".join(results)
     with response_mtr_checks_lock:
         response_mtr_checks.append(output)
-
 
 def threading_mtr_checks():
     threads = []
@@ -328,4 +350,4 @@ def update_cli():
 if __name__ == '__main__':       
     while True:
         update_cli()
-        time.sleep(3) 
+        #time.sleep(1) 
