@@ -1,7 +1,7 @@
 import netifaces
 import config
 
-def myipaddr():
+def myip_local_v4v6():
     ipv6_addr = None
     ipv4_addr = None
     netmask = None
@@ -23,11 +23,13 @@ def myipaddr():
     except Exception as e:
         print(f"IPアドレス取得中にエラーが発生しました: {e}")
     
-    print(f"Interface: {config.interface}")
+    response_myip_local_v4v6 = "\033[1m\033[93m-------Network Setting-------\033[0m\n"
+    response_myip_local_v4v6 +=f"Interface: {config.interface}\n"
     if ipv4_addr and netmask:
-        print(f"IPv4 Address: {ipv4_addr}")
-        print(f"Netmask: {netmask}")
+        response_myip_local_v4v6 +=f"IPv4 Address: {ipv4_addr}\n"
+        response_myip_local_v4v6 +=f"Netmask: {netmask}\n"
     if gateway:
-        print(f"Default Gateway: {gateway}")
+        response_myip_local_v4v6 +=f"Default Gateway: {gateway}\n"
     if ipv6_addr:
-        print(f"IPv6 Address: {ipv6_addr}")
+        response_myip_local_v4v6 +=f"IPv6 Address: {ipv6_addr}\n"
+    return response_myip_local_v4v6

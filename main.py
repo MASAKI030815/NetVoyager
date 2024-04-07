@@ -1,48 +1,34 @@
 import sys
 import time
-from myipaddr import myipaddr
+import threading
+from myip_local_v4v6 import myip_local_v4v6
 from ping_gateway_v4 import ping_gateway_v4
 from ping_internet_v4 import ping_internet_v4
 from ping_internet_v6 import ping_internet_v6
 
+def worker(func, results, key):
+    result = func()
+    results[key] = result
+
 def update_cli():
+
+    results = {}
+    keys = ['myip_local_v4v6', 'ping_gateway_v4', 'ping_internet_v4', 'ping_internet_v6']
+    functions = [myip_local_v4v6, ping_gateway_v4, ping_internet_v4, ping_internet_v6]
+
+    threads = []
+    for key, func in zip(keys, functions):
+        thread = threading.Thread(target=worker, args=(func, results, key))
+        threads.append(thread)
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+        
     sys.stdout.write("\033[H\033[J")
-
-    print("\033[1m\033[93m-------Network Setting-------\033[0m")
-    myipaddr()
-
-    print("\033[1m\033[93m\n-------Gateway Ping Result-------\033[0m")
-    ping_gateway_v4()
-    
-
-    print("\033[1m\033[93m\n-------IPv4 Ping Results-------\033[0m")
-    ping_internet_v4()
-
-    print("\033[1m\033[93m\n-------IPv6 Ping Results-------\033[0m")
-    ping_internet_v6()
-#    print("\033[1m\033[93m\n-------HTTP IPv4 Results-------\033[0m")
-#    for status in response_http_checks:
-#        if "IPv4" in status:
-#            print(status)
-
-#    print("\033[1m\033[93m\n-------HTTP IPv6 Results-------\033[0m")
-#    for status in response_http_checks:
-#        if "IPv6" in status:
-#            print(status)
-
-#    print("\033[1m\033[93m\n-------Virus Check Results-------\033[0m")
-#    for status in response_virus_checks:
-#        print(status)
-
-#    print("\033[1m\033[93m\n-------IPv4 MTR Results-------\033[0m")
-#    for result in response_mtr_checks:
-#        if 'IPv4' in result:
-#            print(result)
-
-#    print("\033[1m\033[93m\n-------IPv6 MTR Results-------\033[0m")
-#    for result in response_mtr_checks:
-#        if 'IPv6' in result:
-#            print(result)
+    # 関数が完了した順ではなく、定義された順序で結果を表示
+    for key in keys:
+        print(results[key])
 
 if __name__ == '__main__':       
     while True:
