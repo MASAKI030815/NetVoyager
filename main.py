@@ -24,7 +24,7 @@ def update_cli():
 
     for thread in threads:
         thread.join()
-        
+
     sys.stdout.write("\033[H\033[J")
     # 関数が完了した順ではなく、定義された順序で結果を表示
     for key in keys:
@@ -33,4 +33,4 @@ def update_cli():
 if __name__ == '__main__':       
     while True:
         update_cli()
-        time.sleep(3)
+        #time.sleep(3)

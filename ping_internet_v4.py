@@ -42,5 +42,3 @@ def ping_internet_v4():
             
             response_ping_internet_v4 += results[host]+"\n"
     return response_ping_internet_v4
-
-#ping_internet_v4()
