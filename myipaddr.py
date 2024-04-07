@@ -22,5 +22,12 @@ def myipaddr():
                     break
     except Exception as e:
         print(f"IPアドレス取得中にエラーが発生しました: {e}")
-
-    return ipv4_addr, netmask, gateway, ipv6_addr
+    
+    print(f"Interface: {config.interface}")
+    if ipv4_addr and netmask:
+        print(f"IPv4 Address: {ipv4_addr}")
+        print(f"Netmask: {netmask}")
+    if gateway:
+        print(f"Default Gateway: {gateway}")
+    if ipv6_addr:
+        print(f"IPv6 Address: {ipv6_addr}")

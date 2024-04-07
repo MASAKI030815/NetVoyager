@@ -21,7 +21,5 @@ def ping_gateway_v4():
     status_color = "\033[92m" if status == "OK" else "\033[91m"
 
     response_ping_gateway_v4 = f"{status_color}{status}\033[0m ({short_color}Short\033[0m / {large_color}Large\033[0m) : {default_gateway}"
-
-    return response_ping_gateway_v4
-
+    print(response_ping_gateway_v4)
 
