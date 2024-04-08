@@ -33,12 +33,15 @@ def ping_internet_v4():
         thread.join()
 
     results = {}
+
     while not queue.empty():
         host, result = queue.get()
         results[host] = result
+    
     response_ping_internet_v4 = "\033[1m\033[93m\n-------IPv4 Ping Results-------\033[0m\n"
+    
     for host, name in config.pingv4_targets:
         if host in results:
-            
             response_ping_internet_v4 += results[host]+"\n"
+    
     return response_ping_internet_v4

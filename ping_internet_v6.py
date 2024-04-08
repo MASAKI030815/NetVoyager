@@ -33,12 +33,16 @@ def ping_internet_v6():
         thread.join()
 
     results = {}
+
     while not queue.empty():
         host, result = queue.get()
         results[host] = result
+    
     response_ping_internet_v6 = "\033[1m\033[93m\n-------IPv6 Ping Results-------\033[0m\n"
+    
     for host, name in config.pingv6_targets:
         if host in results:
-
             response_ping_internet_v6 += results[host] + "\n"
+
     return response_ping_internet_v6
+
