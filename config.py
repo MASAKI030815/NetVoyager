@@ -1,4 +1,5 @@
-interface = "{1984C643-096C-42F0-8CD9-48BAD766A457}"
+#interface = "{1984C643-096C-42F0-8CD9-48BAD766A457}"
+interface = "eth0"
 pingv4_targets = [
     ["8.8.8.8", "Google DNS"],
     ["8.8.4.4", "Google DNS Backup"],
