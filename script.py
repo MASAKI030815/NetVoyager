@@ -16,10 +16,17 @@ pingv6_targets = [
     ["2001:4860:4860::8888", "Google DNS IPv6"],
     ["2001:4860:4860::8844", "Google DNS Backup IPv6"],
 ]
-pingv4_large_option = ["-c", "2", "-M", "do", "-s", "1472", "-W", "1"]
-pingv4_short_option = ["-c", "2", "-s", "64", "-W", "1"]
-pingv6_large_option = ["-c", "2", "-s", "1300", "-W", "1"]
-pingv6_short_option = ["-c", "2", "-s", "128", "-W", "1"]
+#Windows
+pingv4_short_option = ["-4 -n 1 -w 1"]
+pingv4_large_option = ["-4 -n 1 -l 1472 -w 1"]
+pingv6_short_option = ["-6 -n 1 -w 1"]
+pingv6_large_option = ["-6 -n 1 -l 1452 -w 1"]
+
+#Linux
+#pingv4_large_option = ["-4","-c", "2", "-M", "do", "-s", "1000", "-W", "1"]
+#pingv4_short_option = ["-4","-c", "2", "-s", "64", "-W", "1"]
+#pingv6_large_option = ["-6","-c", "2", "-s", "1000", "-W", "1"]
+#pingv6_short_option = ["-6","-c", "2", "-s", "128", "-W", "1"]
 http_check_targets = [
     ["http://ipv4.google.com", "Google-IPv4"],
     ["http://ipv6test.google.com/", "Google-IPv6"],
