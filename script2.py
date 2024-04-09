@@ -17,16 +17,16 @@ pingv6_targets = [
     ["2001:4860:4860::8844", "Google DNS Backup IPv6"],
 ]
 #Windows
-pingv4_short_option = ["-4 -n 1 -w 1"]
-pingv4_large_option = ["-4 -n 1 -l 1472 -w 1"]
-pingv6_short_option = ["-6 -n 1 -w 1"]
-pingv6_large_option = ["-6 -n 1 -l 1452 -w 1"]
+#pingv4_short_option = ["-4 -n 1 -w 1"]
+#pingv4_large_option = ["-4 -n 1 -l 1472 -w 1"]
+#pingv6_short_option = ["-6 -n 1 -w 1"]
+#pingv6_large_option = ["-6 -n 1 -l 1452 -w 1"]
 
 #Linux
-#pingv4_large_option = ["-4","-c", "2", "-M", "do", "-s", "1000", "-W", "1"]
-#pingv4_short_option = ["-4","-c", "2", "-s", "64", "-W", "1"]
-#pingv6_large_option = ["-6","-c", "2", "-s", "1000", "-W", "1"]
-#pingv6_short_option = ["-6","-c", "2", "-s", "128", "-W", "1"]
+pingv4_large_option = ["-4","-c", "2", "-M", "do", "-s", "1000", "-W", "1"]
+pingv4_short_option = ["-4","-c", "2", "-s", "64", "-W", "1"]
+pingv6_large_option = ["-6","-c", "2", "-s", "1000", "-W", "1"]
+pingv6_short_option = ["-6","-c", "2", "-s", "128", "-W", "1"]
 http_check_targets = [
     ["http://ipv4.google.com", "Google-IPv4"],
     ["http://ipv6test.google.com/", "Google-IPv6"],
@@ -287,27 +287,27 @@ def update_cli():
 
     ipv4_addr, netmask, gateway, ipv6_addr = myipaddr()
 
-    print("\033[1m\033[93m-------Network Setting-------\033[0m")
-    print(f"Interface: {interface}")
-    if ipv4_addr and netmask:
-        print(f"IPv4 Address: {ipv4_addr}")
-        print(f"Netmask: {netmask}")
-    if gateway:
-        print(f"Default Gateway: {gateway}")
-    if ipv6_addr:
-        print(f"IPv6 Address: {ipv6_addr}")
-
-    print("\033[1m\033[93m\n-------Gateway Ping Result-------\033[0m")
-    print(response_ping_gateway_v4)
-
-    print("\033[1m\033[93m\n-------IPv4 Ping Results-------\033[0m")
-    for status in response_ping_internet_v4:
-        print(status)
-
-    print("\033[1m\033[93m\n-------IPv6 Ping Results-------\033[0m")
-    for status in response_ping_internet_v6:
-        print(status)
-
+#    print("\033[1m\033[93m-------Network Setting-------\033[0m")
+#    print(f"Interface: {interface}")
+#    if ipv4_addr and netmask:
+#        print(f"IPv4 Address: {ipv4_addr}")
+#        print(f"Netmask: {netmask}")
+#    if gateway:
+#        print(f"Default Gateway: {gateway}")
+#    if ipv6_addr:
+#        print(f"IPv6 Address: {ipv6_addr}")
+#
+#    print("\033[1m\033[93m\n-------Gateway Ping Result-------\033[0m")
+#    print(response_ping_gateway_v4)
+#
+#    print("\033[1m\033[93m\n-------IPv4 Ping Results-------\033[0m")
+#    for status in response_ping_internet_v4:
+#        print(status)
+#
+#    print("\033[1m\033[93m\n-------IPv6 Ping Results-------\033[0m")
+#    for status in response_ping_internet_v6:
+#        print(status)
+#
     print("\033[1m\033[93m\n-------HTTP IPv4 Results-------\033[0m")
     for status in response_http_checks:
         if "IPv4" in status:

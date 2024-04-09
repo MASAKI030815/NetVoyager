@@ -17,16 +17,16 @@ pingv6_targets = [
     ["2001:4860:4860::8844", "Google DNS Backup IPv6"],
 ]
 #Windows
-pingv4_short_option = ["-4 -n 1 -w 1"]
-pingv4_large_option = ["-4 -n 1 -l 1472 -w 1"]
-pingv6_short_option = ["-6 -n 1 -w 1"]
-pingv6_large_option = ["-6 -n 1 -l 1452 -w 1"]
+#pingv4_short_option = ["-4 -n 1 -w 1"]
+#pingv4_large_option = ["-4 -n 1 -l 1472 -w 1"]
+#pingv6_short_option = ["-6 -n 1 -w 1"]
+#pingv6_large_option = ["-6 -n 1 -l 1452 -w 1"]
 
 #Linux
-#pingv4_large_option = ["-4","-c", "2", "-M", "do", "-s", "1000", "-W", "1"]
-#pingv4_short_option = ["-4","-c", "2", "-s", "64", "-W", "1"]
-#pingv6_large_option = ["-6","-c", "2", "-s", "1000", "-W", "1"]
-#pingv6_short_option = ["-6","-c", "2", "-s", "128", "-W", "1"]
+pingv4_large_option = ["-4","-c", "2", "-M", "do", "-s", "1000", "-W", "1"]
+pingv4_short_option = ["-4","-c", "2", "-s", "64", "-W", "1"]
+pingv6_large_option = ["-6","-c", "2", "-s", "1000", "-W", "1"]
+pingv6_short_option = ["-6","-c", "2", "-s", "128", "-W", "1"]
 http_check_targets = [
     ["http://ipv4.google.com", "Google-IPv4"],
     ["http://ipv6test.google.com/", "Google-IPv6"],
@@ -308,29 +308,29 @@ def update_cli():
     for status in response_ping_internet_v6:
         print(status)
 
-    print("\033[1m\033[93m\n-------HTTP IPv4 Results-------\033[0m")
-    for status in response_http_checks:
-        if "IPv4" in status:
-            print(status)
-
-    print("\033[1m\033[93m\n-------HTTP IPv6 Results-------\033[0m")
-    for status in response_http_checks:
-        if "IPv6" in status:
-            print(status)
-
-    print("\033[1m\033[93m\n-------Virus Check Results-------\033[0m")
-    for status in response_virus_checks:
-        print(status)
-
-    print("\033[1m\033[93m\n-------IPv4 MTR Results-------\033[0m")
-    for result in response_mtr_checks:
-        if 'IPv4' in result:
-            print(result)
-
-    print("\033[1m\033[93m\n-------IPv6 MTR Results-------\033[0m")
-    for result in response_mtr_checks:
-        if 'IPv6' in result:
-            print(result)
+#    print("\033[1m\033[93m\n-------HTTP IPv4 Results-------\033[0m")
+#    for status in response_http_checks:
+#        if "IPv4" in status:
+#            print(status)
+#
+#    print("\033[1m\033[93m\n-------HTTP IPv6 Results-------\033[0m")
+#    for status in response_http_checks:
+#        if "IPv6" in status:
+#            print(status)
+#
+#    print("\033[1m\033[93m\n-------Virus Check Results-------\033[0m")
+#    for status in response_virus_checks:
+#        print(status)
+#
+#    print("\033[1m\033[93m\n-------IPv4 MTR Results-------\033[0m")
+#    for result in response_mtr_checks:
+#        if 'IPv4' in result:
+#            print(result)
+#
+#    print("\033[1m\033[93m\n-------IPv6 MTR Results-------\033[0m")
+#    for result in response_mtr_checks:
+#        if 'IPv6' in result:
+#            print(result)
     
 if __name__ == '__main__':       
     while True:
