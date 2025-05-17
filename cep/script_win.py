@@ -4,10 +4,8 @@ import sys
 import netifaces
 import requests
 import subprocess
-import mtrpacket
 import socket
 import asyncio
-
 
 #-----------------------
 interface = "{1984C643-096C-42F0-8CD9-48BAD766A457}"
@@ -19,7 +17,6 @@ pingv6_targets = [
     ["2001:4860:4860::8888", "Google DNS IPv6"],
     ["2001:4860:4860::8844", "Google DNS Backup IPv6"],
 ]
-
 
 #Windows
 
@@ -34,7 +31,6 @@ pingv4_short_option = ["-c", "2", "-s", "64", "-W", "1"]
 pingv6_large_option = ["-c", "2", "-s", "1300", "-W", "1"]
 pingv6_short_option = ["-c", "2", "-s", "128", "-W", "1"]
 """
-
 
 http_check_targets = [
     ["http://ipv4.google.com", "Google-IPv4"],
@@ -75,7 +71,6 @@ response_mtr_checks = []
 response_mtr_checks_lock = threading.Lock()
 
 def myipaddr():
-    global interface
     ipv6_addr = None
     ipv4_addr = None
     netmask = None
@@ -269,11 +264,6 @@ def threading_ping_v6():
     return thread
 
 def update_cli():
-    global response_myipaddr
-    global response_ping_gateway_v4
-    global response_ping_internet_v4
-    global response_ping_internet_v6
-    global response_mtr_checks
 
     response_myipaddr = myipaddr()
     response_ping_gateway_v4 = ping_gateway_v4()
